@@ -1,0 +1,39 @@
+<header class="site-header">
+    <div class="header-inner">
+        <!-- Logo -->
+        <a href="/" class="logo">
+            <i data-lucide="leaf" class="logo-icon"></i>
+            <span class="logo-text">HerbGuard</span>
+        </a>
+        <!-- Navigation -->
+        <nav class="header-nav">
+            <a href="/" class="nav-item {{#if isOverview}}active{{/if}}">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Overview</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="settings"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+        <!-- Right side -->
+        <div class="header-right">
+        <div class="connection-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Live</span>
+        </div>
+
+        <!-- Theme toggle -->
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+            <i data-lucide="sun" id="theme-icon-light"></i>
+            <i data-lucide="moon" id="theme-icon-dark"></i>
+        </button>
+
+        <div class="header-clock" id="header-clock">--:--:--</div>
+        </div>
+    </div>
+</header>

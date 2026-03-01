@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{pageTitle}} — HerbGuard</title>
+
+        <!-- Prevents flash of wrong theme on load -->
+        <script>
+        (function() {
+            var t = localStorage.getItem('herbguard-theme');
+            if (t === 'light') document.body.classList.add('light-theme');
+        })();
+        </script>
+        
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Lucide Icons -->
+        <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+        <link rel="stylesheet" href="/css/main.css"/>
+        
+        <!-- Page-specific CSS block (optional, injected per page later) -->
+        {{#if pageCSS}}
+            <link rel="stylesheet" href="/css/{{pageCSS}}"/>
+        {{/if}}
+    </head>
+    <body>
+        <script>
+        (function() {
+            var t = localStorage.getItem('herbguard-theme');
+            if (t === 'light') document.body.classList.add('light-theme');
+        })();
+        </script>
+        {{> header}}
+
+        <main class="main-content">
+            {{{body}}}
+        </main>
+
+        {{> footer}}
+        <!-- Chart.js — only loads when needed, lightweight -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <!-- Lucide icon activation -->
+        <script>lucide.createIcons();</script>
+
+        <!-- Our shared JS -->
+        <script src="/js/main.js"></script>
+
+        <!-- Page-specific JS block (optional, injected per page later) -->
+        {{#if pageJS}}
+            <script src="/js/{{pageJS}}"></script>
+        {{/if}}
+    </body>
+
+</html>

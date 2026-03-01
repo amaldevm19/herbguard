@@ -1,0 +1,330 @@
+<!-- ── Summary Stats Row ───────────────── -->
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Plant Overview</h1>
+        <p class="page-sub">{{totalPots}} pots monitored · Data refreshes every 30s</p>
+    </div>
+    <div class="header-pills">
+        {{#if alertCount}}
+            <div class="pill pill-red">
+            <i data-lucide="triangle-alert"></i>
+            <span>{{alertCount}} alert{{#if (isMoreThanOne alertCount)}}s{{/if}}</span>
+            </div>
+        {{else}}
+            <div class="pill pill-green">
+                <i data-lucide="check-circle"></i>
+                <span>All healthy</span>
+            </div>
+        {{/if}}
+        <div class="pill pill-blue">
+            <i data-lucide="droplets"></i>
+            <span>{{needsWater}} need water</span>
+        </div>
+        <div class="pill pill-amber">
+            <i data-lucide="thermometer"></i>
+            <span>{{avgTemp}}°C avg</span>
+        </div>
+    </div>
+</div>
+
+<!-- ── Summary Cards ──────────────────── -->
+<div class="summary-row">
+    <div class="summary-card">
+        <div class="sc-icon sc-green">
+            <i data-lucide="leaf"></i>
+        </div>
+        <div class="sc-body">
+            <div class="sc-val" style="color:var(--green)">{{healthyCount}}/{{totalPots}}</div>
+            <div class="sc-label">Healthy Plants</div>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="sc-icon sc-blue">
+            <i data-lucide="droplets"></i>
+        </div>
+        <div class="sc-body">
+            <div class="sc-val" style="color:var(--blue)">{{needsWater}}</div>
+            <div class="sc-label">Need Watering</div>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="sc-icon sc-amber">
+            <i data-lucide="thermometer"></i>
+        </div>
+        <div class="sc-body">
+            <div class="sc-val" style="color:var(--amber)">{{avgTemp}}°C</div>
+            <div class="sc-label">Avg Air Temp</div>
+        </div>
+    </div>
+    <div class="summary-card">
+        <div class="sc-icon sc-red">
+            <i data-lucide="triangle-alert"></i>
+        </div>
+        <div class="sc-body">
+            <div class="sc-val" style="color:var(--red)">{{alertCount}}</div>
+            <div class="sc-label">Active Alerts</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Plant Cards Grid ───────────────── -->
+<div class="plant-grid">
+    {{#each plants}}
+        <div class="plant-card {{healthClass health}}" data-pot="{{potId}}">
+            <!-- Banner -->
+            <div class="card-banner">
+                <span class="card-emoji">{{emoji}}</span>
+                <span class="card-pot-id">{{potId}}</span>
+                <div class="card-health-badge {{healthClass health}}">
+                    <i data-lucide="{{healthIcon health}}"></i>
+                    <span>{{healthLabel health}}</span>
+                </div>
+                {{#if lightActive}}
+                    <div class="card-light-badge">
+                        <i data-lucide="sun"></i>
+                        <span>Grow Light On</span>
+                    </div>
+                {{/if}}
+            </div>
+
+            <!-- Body -->
+            <div class="card-body">
+                <!-- Name + health score -->
+                <div class="card-name-row">
+                    <div>
+                        <div class="card-name">{{plantName}}</div>
+                        <div class="card-species">{{species}}</div>
+                    </div>
+                    <div class="health-score {{healthClass health}}">
+                        {{healthScore}}<span class="health-score-unit">%</span>
+                    </div>
+                </div>
+                <!-- Three key metrics -->
+                <div class="mini-metrics">
+                <div class="mini-metric">
+                    <div class="mm-icon"><i data-lucide="droplets"></i></div>
+                    <div class="mm-val" data-metric="moisture"
+                    style="color:{{moistureColor moisture optimalMoisture}}">
+                    {{toFixed moisture 0}}%
+                    </div>
+                    <div class="mm-label">Moisture</div>
+                    <div class="mm-bar">
+                    <div class="mm-fill mm-blue" data-metric="moisture"
+                        style="width:{{toPercent moisture 100}}%"></div>
+                    </div>
+                </div>
+                <div class="mini-metric">
+                    <div class="mm-icon"><i data-lucide="thermometer"></i></div>
+                    <div class="mm-val" data-metric="airTemp"
+                    style="color:{{tempColor airTemp optimalTemp}}">
+                    {{toFixed airTemp 1}}°
+                    </div>
+                    <div class="mm-label">Air Temp</div>
+                    <div class="mm-bar">
+                    <div class="mm-fill mm-amber" data-metric="airTemp"
+                        style="width:{{toPercent airTemp 50}}%"></div>
+                    </div>
+                </div>
+                <div class="mini-metric">
+                    <div class="mm-icon"><i data-lucide="wind"></i></div>
+                    <div class="mm-val" data-metric="humidity"
+                    style="color:{{humidityColor humidity}}">
+                    {{toFixed humidity 0}}%
+                    </div>
+                    <div class="mm-label">Humidity</div>
+                    <div class="mm-bar">
+                    <div class="mm-fill mm-green" data-metric="humidity"
+                        style="width:{{toPercent humidity 100}}%"></div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Extra metrics -->
+                <div class="extra-metrics">
+                <span class="em-item em-purple" data-metric="ph">
+                    <i data-lucide="flask-conical"></i>
+                    <span>{{phDisplay ph}}</span>
+                </span>
+                <span class="em-item em-yellow" data-metric="light">
+                    <i data-lucide="sun"></i>
+                    <span>{{formatNumber light}} lux</span>
+                </span>
+                <span class="em-item em-orange" data-metric="soilTemp">
+                    <i data-lucide="thermometer"></i>
+                    <span>{{toFixed soilTemp 1}}° soil</span>
+                </span>
+                </div>
+                <!-- Optimal ranges — so client understands what is normal per plant -->
+                <div class="optimal-ranges">
+                <span class="opt-item">
+                    <i data-lucide="droplets"></i>
+                    {{optimalMoisture.[0]}}–{{optimalMoisture.[1]}}% moisture
+                </span>
+                <span class="opt-item">
+                    <i data-lucide="thermometer"></i>
+                    {{optimalTemp.[0]}}–{{optimalTemp.[1]}}°C temp
+                </span>
+                <span class="opt-item">
+                    <i data-lucide="flask-conical"></i>
+                    pH {{optimalPh.[0]}}–{{optimalPh.[1]}}
+                </span>
+                </div>
+                <!-- Pump info -->
+                <div class="card-water-row">
+                    <div class="water-item">
+                        <span class="water-label">
+                        <i data-lucide="waves"></i>
+                        Last pump
+                        </span>
+                        <span class="water-val">{{lastPump}}</span>
+                    </div>
+                    <div class="water-divider"></div>
+                    <div class="water-item">
+                        <span class="water-label">
+                        <i data-lucide="clock"></i>
+                        Next water
+                        </span>
+                        <span class="water-val">{{nextWater}}</span>
+                    </div>
+                </div>
+                <!-- Alert chips (only shown if issues exist) -->
+                {{#if this.healthIssues.length}}
+                    <div class="card-alerts">
+                        {{#each this.healthIssues}}
+                        <span class="alert-chip">{{this}}</span>
+                        {{/each}}
+                    </div>
+                {{/if}}
+                <!-- Action buttons -->
+                <div class="card-actions">
+                    <button class="btn btn-ghost" onclick="openModal('{{potId}}')">
+                        <i data-lucide="bar-chart-2"></i>
+                        Quick View
+                    </button>
+                    <a href="/plant/{{potId}}" class="btn btn-primary">
+                        <i data-lucide="microscope"></i>
+                        Dashboard
+                    </a>
+                </div>
+                <div class="card-footer-meta">
+                    <i data-lucide="clock"></i>
+                    Updated {{lastUpdated}}
+                </div>
+            </div>    
+        </div>
+    {{/each}}
+</div>
+
+<script>
+  const PLANTS = {{{plantsJSON}}};
+</script>
+
+<!-- Quick View Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box" id="modal-box">
+
+    <!-- Modal Header -->
+    <div class="modal-header" id="modal-header">
+      <div class="modal-emoji" id="modal-emoji"></div>
+      <div class="modal-plant-info">
+        <div class="modal-plant-name"  id="modal-plant-name"></div>
+        <div class="modal-plant-species" id="modal-plant-species"></div>
+        <div class="modal-pot-id" id="modal-pot-id"></div>
+      </div>
+      <button class="modal-close-btn" id="modal-close-btn">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+
+      <!-- Health score banner -->
+      <div class="modal-health-banner" id="modal-health-banner">
+        <i data-lucide="heart-pulse"></i>
+        <span id="modal-health-label"></span>
+        <span class="modal-health-score" id="modal-health-score"></span>
+      </div>
+
+      <!-- 2x2 key metrics -->
+      <div class="modal-metrics-grid" id="modal-metrics-grid"></div>
+
+      <!-- Gauge bars -->
+      <div class="modal-gauges">
+
+        <div class="mgauge-row">
+          <div class="mgauge-header">
+            <span class="mgauge-label">
+              <i data-lucide="droplets"></i> Soil Moisture
+            </span>
+            <span class="mgauge-val" id="mg-moisture-val"></span>
+          </div>
+          <div class="mgauge-track">
+            <div class="mgauge-fill mgauge-blue" id="mg-moisture-fill"></div>
+          </div>
+          <div class="mgauge-range" id="mg-moisture-range"></div>
+        </div>
+
+        <div class="mgauge-row">
+          <div class="mgauge-header">
+            <span class="mgauge-label">
+              <i data-lucide="wind"></i> Humidity
+            </span>
+            <span class="mgauge-val" id="mg-humidity-val"></span>
+          </div>
+          <div class="mgauge-track">
+            <div class="mgauge-fill mgauge-green" id="mg-humidity-fill"></div>
+          </div>
+        </div>
+
+        <div class="mgauge-row">
+          <div class="mgauge-header">
+            <span class="mgauge-label">
+              <i data-lucide="flask-conical"></i> pH Level
+            </span>
+            <span class="mgauge-val" id="mg-ph-val"></span>
+          </div>
+          <div class="mgauge-track">
+            <div class="mgauge-fill mgauge-purple" id="mg-ph-fill"></div>
+          </div>
+          <div class="mgauge-range" id="mg-ph-range"></div>
+        </div>
+
+      </div>
+
+      <!-- Pump info row -->
+      <div class="modal-pump-row">
+        <div class="modal-pump-box">
+          <div class="mpump-label">
+            <i data-lucide="waves"></i> Last Pump
+          </div>
+          <div class="mpump-val" id="modal-last-pump"></div>
+        </div>
+        <div class="modal-pump-box">
+          <div class="mpump-label">
+            <i data-lucide="clock"></i> Next Water
+          </div>
+          <div class="mpump-val" id="modal-next-water"></div>
+        </div>
+      </div>
+
+      <!-- Alert issues -->
+      <div class="modal-alerts" id="modal-alerts"></div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="modal-close-footer">
+        <i data-lucide="x"></i>
+        Close
+      </button>
+      <a class="btn btn-primary" id="modal-dashboard-link" href="#">
+        <i data-lucide="microscope"></i>
+        Open Full Dashboard
+      </a>
+    </div>
+
+  </div>
+</div>

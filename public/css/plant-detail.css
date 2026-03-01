@@ -1,0 +1,515 @@
+/* ═══════════════════════════════════════════
+   HERBGUARD — Plant Detail Page Styles
+   Phase 5
+═══════════════════════════════════════════ */
+
+/* ── Breadcrumb ──────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+.back-link:hover { color: var(--text); }
+.back-link svg   { width: 14px; height: 14px; }
+
+.bc-sep     { color: var(--muted2); }
+.bc-current { color: var(--text); }
+
+/* ── Hero ────────────────────────────────── */
+.detail-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 1.25rem;
+  background-image: radial-gradient(
+    ellipse at 85% 20%,
+    rgba(57,211,83,0.05) 0%,
+    transparent 60%
+  );
+}
+
+.detail-hero-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-hero-icon {
+  width: 88px;
+  height: 88px;
+  background: linear-gradient(135deg, #1a3a1a, #0d2218);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  flex-shrink: 0;
+}
+
+.detail-hero-name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.detail-hero-species {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0.3rem 0 0.8rem;
+}
+
+.detail-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.detail-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.22rem 0.75rem;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+
+.detail-tag svg { width: 11px; height: 11px; }
+
+.health-tag-good { background: var(--green-dim); color: var(--green); border-color: rgba(46,160,67,0.3); }
+.health-tag-warn { background: var(--amber-dim); color: var(--amber); border-color: rgba(227,179,65,0.3); }
+.health-tag-bad  { background: var(--red-dim);   color: var(--red);   border-color: rgba(248,81,73,0.3); }
+.tag-light { background: rgba(255,215,0,0.1); color: #ffd700; border-color: rgba(255,215,0,0.3); }
+
+.detail-description {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 580px;
+}
+
+/* Health ring */
+.detail-health-ring {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.ring-svg { width: 100%; height: 100%; }
+
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring-val {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.ring-label {
+  font-size: 0.6rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+/* ── Uses strip ──────────────────────────── */
+.uses-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.use-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--green-dim);
+  border: 1px solid rgba(46,160,67,0.25);
+  color: var(--green);
+  border-radius: 20px;
+  padding: 0.28rem 0.8rem;
+  font-size: 0.72rem;
+}
+
+.use-chip svg { width: 11px; height: 11px; }
+
+/* ── Section header row ──────────────────── */
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--green-dim);
+  border: 1px solid rgba(46,160,67,0.3);
+  border-radius: 20px;
+  padding: 0.22rem 0.7rem;
+  font-size: 0.7rem;
+  color: var(--green);
+  font-family: var(--font-mono);
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+/* ── Gauge Grid ──────────────────────────── */
+.gauge-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gauge-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 0.8rem;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.gauge-card-warn {
+  border-color: rgba(227,179,65,0.4);
+  background: rgba(61,46,10,0.25);
+}
+
+.gauge-icon-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 0.7rem;
+}
+
+.gauge-icon-label svg { width: 12px; height: 12px; }
+
+.gauge-circle-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 0.7rem;
+}
+
+.gauge-circle-wrap svg { width: 100%; height: 100%; }
+
+.gauge-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-val {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.gauge-unit {
+  font-size: 0.55rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.gauge-optimal {
+  font-size: 0.58rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.gauge-out-label {
+  font-size: 0.6rem;
+  color: var(--amber);
+  margin-top: 0.2rem;
+}
+
+/* ── Charts ──────────────────────────────── */
+.chart-legend {
+  display: flex;
+  gap: 1rem;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.leg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.chart-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.chart-card-title svg { width: 13px; height: 13px; }
+
+/* Fixed height wrappers — prevents Chart.js infinite growth */
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
+
+.chart-canvas-wrap.chart-sm { height: 180px; }
+
+.chart-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Controls ────────────────────────────── */
+.controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.control-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.control-icon svg { width: 26px; height: 26px; }
+
+.control-info  { flex: 1; min-width: 0; }
+.control-name  { font-weight: 500; font-size: 0.9rem; }
+.control-sub   { font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; font-family: var(--font-mono); }
+
+.control-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.btn-sm { padding: 0.35rem 0.7rem; font-size: 0.72rem; }
+
+.btn-active {
+  background: var(--green-dim);
+  border: 1px solid rgba(46,160,67,0.35);
+  color: var(--green);
+}
+
+/* ── Info Grid ───────────────────────────── */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.4rem;
+}
+
+.info-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.info-card-title svg { width: 14px; height: 14px; }
+
+.uses-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--border2);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.uses-list li svg    { width: 12px; height: 12px; color: var(--green-mid); flex-shrink: 0; }
+.uses-list li:last-child { border-bottom: none; }
+
+.optimal-conditions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.oc-item {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+}
+
+.oc-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.62rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  margin-bottom: 0.3rem;
+}
+
+.oc-label svg { width: 10px; height: 10px; }
+
+.oc-val     { font-size: 0.88rem; font-weight: 500; margin-bottom: 0.15rem; }
+.oc-current { font-size: 0.68rem; font-family: var(--font-mono); }
+
+/* ── Table ───────────────────────────────── */
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.table-wrap { overflow-x: auto; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  background: var(--surface2);
+}
+
+.data-table th svg { width: 10px; height: 10px; vertical-align: middle; margin-right: 0.25rem; }
+
+.data-table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border2);
+  white-space: nowrap;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface2); }
+
+.mono  { font-family: var(--font-mono); font-size: 0.78rem; }
+.muted { color: var(--muted); }
+
+.pump-event-badge {
+  background: var(--blue-dim);
+  color: var(--blue);
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+}
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 1200px) {
+  .gauge-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 1024px) {
+  .detail-hero  { flex-direction: column; }
+  .detail-health-ring { display: none; }
+  .controls-grid { grid-template-columns: 1fr; }
+  .info-grid     { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .gauge-grid    { grid-template-columns: repeat(2, 1fr); }
+  .chart-row-2   { grid-template-columns: 1fr; }
+  .detail-hero-left { flex-direction: column; }
+  .detail-hero-icon { width: 68px; height: 68px; font-size: 2.4rem; }
+  .detail-hero-name { font-size: 1.5rem; }
+  .optimal-conditions-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .gauge-grid { grid-template-columns: repeat(2, 1fr); }
+}

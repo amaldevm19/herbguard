@@ -1,0 +1,334 @@
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="/" class="back-link">
+    <i data-lucide="arrow-left"></i>
+    Back to Overview
+  </a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">{{plant.plantName}}</span>
+</div>
+
+<!-- ── Hero Header ─────────────────────── -->
+<div class="detail-hero">
+  <div class="detail-hero-left">
+    <div class="detail-hero-icon">{{plant.emoji}}</div>
+    <div class="detail-hero-info">
+      <h1 class="detail-hero-name">{{plant.plantName}}</h1>
+      <div class="detail-hero-species">
+        <em>{{plant.species}}</em> · {{plant.family}}
+      </div>
+      <div class="detail-hero-tags">
+        <span class="detail-tag">{{plant.potId}}</span>
+        <span class="detail-tag health-tag-{{plant.health}}">
+          <i data-lucide="{{healthIcon plant.health}}"></i>
+          {{healthLabel plant.health}}
+        </span>
+        {{#if plant.lightActive}}
+        <span class="detail-tag tag-light">
+          <i data-lucide="sun"></i>
+          Grow Light Active
+        </span>
+        {{/if}}
+        <span class="detail-tag">
+          <i data-lucide="clock"></i>
+          {{plant.lastUpdated}}
+        </span>
+      </div>
+      <p class="detail-description">{{plant.description}}</p>
+    </div>
+  </div>
+
+  <!-- Health ring -->
+  <div class="detail-health-ring">
+    <svg viewBox="0 0 120 120" class="ring-svg">
+      <!-- Track -->
+      <circle
+        cx="60" cy="60" r="46"
+        fill="none"
+        stroke="var(--surface2)"
+        stroke-width="10"
+      />
+      <!-- Fill arc -->
+      <circle
+        cx="60" cy="60" r="46"
+        fill="none"
+        stroke="{{healthRingColor plant.health}}"
+        stroke-width="10"
+        stroke-linecap="round"
+        stroke-dasharray="{{gaugeCircumference}}"
+        stroke-dashoffset="{{gaugeOffset plant.healthScore 100}}"
+        transform="rotate(-90 60 60)"
+      />
+    </svg>
+    <div class="ring-center">
+      <div class="ring-val">{{plant.healthScore}}</div>
+      <div class="ring-label">Health</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Uses strip ──────────────────────── -->
+<div class="uses-strip">
+  {{#each plant.uses}}
+  <span class="use-chip">
+    <i data-lucide="check"></i>
+    {{this}}
+  </span>
+  {{/each}}
+</div>
+
+<!-- ── Live Gauges ─────────────────────── -->
+<div class="section-header-row">
+  <h2 class="section-title">Live Readings</h2>
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    Live
+  </div>
+</div>
+
+<div class="gauge-grid">
+  {{#each gauges}}
+  <div class="gauge-card {{#unless (inRange value optimal)}}gauge-card-warn{{/unless}}">
+    <div class="gauge-icon-label">
+      <i data-lucide="{{icon}}"></i>
+      {{label}}
+    </div>
+    <div class="gauge-circle-wrap">
+      <svg viewBox="0 0 100 100">
+        <!-- Track -->
+        <circle
+          cx="50" cy="50" r="46"
+          fill="none"
+          stroke="var(--surface2)"
+          stroke-width="7"
+        />
+        <!-- Arc -->
+        <circle
+          cx="50" cy="50" r="46"
+          fill="none"
+          stroke="{{gaugeColor value optimal}}"
+          stroke-width="7"
+          stroke-linecap="round"
+          stroke-dasharray="{{gaugeCircumference}}"
+          stroke-dashoffset="{{gaugeOffset value max}}"
+          transform="rotate(-90 50 50)"
+        />
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-val">{{toFixed value 1}}</div>
+        <div class="gauge-unit">{{unit}}</div>
+      </div>
+    </div>
+    <div class="gauge-optimal">
+      {{optimal.[0]}}–{{optimal.[1]}} {{unit}}
+    </div>
+    {{#unless (inRange value optimal)}}
+    <div class="gauge-out-label">Out of range</div>
+    {{/unless}}
+  </div>
+  {{/each}}
+</div>
+
+<!-- ── Charts ──────────────────────────── -->
+<div class="section-header-row" style="margin-top:2rem">
+  <h2 class="section-title">24h History</h2>
+  <div class="chart-legend">
+    <span class="leg-item">
+      <span class="leg-dot" style="background:#58a6ff"></span>Moisture
+    </span>
+    <span class="leg-item">
+      <span class="leg-dot" style="background:#e3b341"></span>Air Temp
+    </span>
+    <span class="leg-item">
+      <span class="leg-dot" style="background:#39d353"></span>Humidity
+    </span>
+  </div>
+</div>
+
+<!-- Main line chart -->
+<div class="chart-card">
+  <div class="chart-canvas-wrap">
+    <canvas id="main-chart"></canvas>
+  </div>
+</div>
+
+<!-- pH + Light side by side -->
+<div class="chart-row-2">
+  <div class="chart-card">
+    <div class="chart-card-title">
+      <i data-lucide="flask-conical"></i> pH Level
+    </div>
+    <div class="chart-canvas-wrap chart-sm">
+      <canvas id="ph-chart"></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-card-title">
+      <i data-lucide="sun"></i> Light Intensity
+    </div>
+    <div class="chart-canvas-wrap chart-sm">
+      <canvas id="light-chart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── Controls ────────────────────────── -->
+<div class="section-header-row" style="margin-top:2rem">
+  <h2 class="section-title">Controls</h2>
+</div>
+
+<div class="controls-grid">
+  <div class="control-card">
+    <div class="control-icon" style="color:var(--blue)">
+      <i data-lucide="waves"></i>
+    </div>
+    <div class="control-info">
+      <div class="control-name">Irrigation Pump</div>
+      <div class="control-sub">
+        Last activated: {{plant.lastPump}}
+      </div>
+    </div>
+    <div class="control-actions">
+      <button class="btn btn-sm btn-ghost"
+        onclick="triggerPump('{{plant.potId}}', 5, this)">5s
+      </button>
+      <button class="btn btn-sm btn-ghost"
+        onclick="triggerPump('{{plant.potId}}', 10, this)">10s
+      </button>
+      <button class="btn btn-sm btn-primary"
+        onclick="triggerPump('{{plant.potId}}', 30, this)">30s
+      </button>
+    </div>
+  </div>
+
+  <div class="control-card">
+    <div class="control-icon" style="color:#ffd700">
+      <i data-lucide="sun"></i>
+    </div>
+    <div class="control-info">
+      <div class="control-name">Grow Light</div>
+      <div class="control-sub">
+        Status: {{lightStatus plant.lightActive}}
+      </div>
+    </div>
+    <div class="control-actions">
+      <button
+        class="btn btn-sm {{#if plant.lightActive}}btn-active{{else}}btn-ghost{{/if}}"
+        id="light-toggle-btn"
+        onclick="toggleLight('{{plant.potId}}', this)">
+        {{#if plant.lightActive}}
+          <i data-lucide="sun"></i> ON
+        {{else}}
+          <i data-lucide="sun-dim"></i> OFF
+        {{/if}}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Plant Info ──────────────────────── -->
+<div class="section-header-row" style="margin-top:2rem">
+  <h2 class="section-title">Plant Information</h2>
+</div>
+
+<div class="info-grid">
+  <div class="info-card">
+    <div class="info-card-title">
+      <i data-lucide="leaf"></i> Uses & Benefits
+    </div>
+    <ul class="uses-list">
+      {{#each plant.uses}}
+      <li>
+        <i data-lucide="arrow-right"></i>
+        {{this}}
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+
+  <div class="info-card">
+    <div class="info-card-title">
+      <i data-lucide="sliders-horizontal"></i> Optimal Conditions
+    </div>
+    <div class="optimal-conditions-grid">
+      <div class="oc-item">
+        <div class="oc-label">
+          <i data-lucide="droplets"></i> Moisture
+        </div>
+        <div class="oc-val">
+          {{plant.optimalMoisture.[0]}}–{{plant.optimalMoisture.[1]}}%
+        </div>
+        <div class="oc-current"
+          style="color:{{moistureColor plant.moisture plant.optimalMoisture}}">
+          Now: {{toFixed plant.moisture 0}}%
+        </div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-label">
+          <i data-lucide="flask-conical"></i> pH Range
+        </div>
+        <div class="oc-val">
+          {{plant.optimalPh.[0]}}–{{plant.optimalPh.[1]}}
+        </div>
+        <div class="oc-current"
+          style="color:{{moistureColor plant.ph plant.optimalPh}}">
+          Now: {{toFixed plant.ph 1}}
+        </div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-label">
+          <i data-lucide="thermometer"></i> Temperature
+        </div>
+        <div class="oc-val">
+          {{plant.optimalTemp.[0]}}–{{plant.optimalTemp.[1]}}°C
+        </div>
+        <div class="oc-current"
+          style="color:{{tempColor plant.airTemp plant.optimalTemp}}">
+          Now: {{toFixed plant.airTemp 1}}°C
+        </div>
+      </div>
+      <div class="oc-item">
+        <div class="oc-label">
+          <i data-lucide="dna"></i> Family
+        </div>
+        <div class="oc-val">{{plant.family}}</div>
+        <div class="oc-current" style="color:var(--muted)">
+          {{plant.species}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── History Table ───────────────────── -->
+<div class="section-header-row" style="margin-top:2rem">
+  <h2 class="section-title">Recent Readings</h2>
+</div>
+
+<div class="table-card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th><i data-lucide="clock"></i> Time</th>
+          <th><i data-lucide="droplets"></i> Moisture</th>
+          <th><i data-lucide="thermometer"></i> Air Temp</th>
+          <th><i data-lucide="thermometer"></i> Soil Temp</th>
+          <th><i data-lucide="wind"></i> Humidity</th>
+          <th><i data-lucide="flask-conical"></i> pH</th>
+          <th><i data-lucide="sun"></i> Light</th>
+          <th><i data-lucide="waves"></i> Pump</th>
+        </tr>
+      </thead>
+      <tbody id="history-tbody">
+        <!-- Populated by plant-detail.js from historyJSON -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Inject server data for JS -->
+<script>
+  const HISTORY = {{{historyJSON}}};
+  const PLANT   = {{{plantJSON}}};
+</script>
