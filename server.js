@@ -21,6 +21,12 @@ const customerRoutes = require('./routes/customer');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// Before express.static
+app.use((req, res, next) => {
+  res.setHeader('ngrok-skip-browser-warning', 'true');
+  next();
+});
+
 // ── Handlebars helpers ────────────────────
 const hbsHelpers = {
     moistureColor(val, optimalRange) {
@@ -102,12 +108,30 @@ app.engine('hbs', engine({
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
+
+
+// Serve manifests as routes so ngrok header applies
+app.get('/manifest.json', (req, res) => {
+  res.setHeader('ngrok-skip-browser-warning', 'true');
+  res.setHeader('Content-Type', 'application/json');
+  res.sendFile(path.join(__dirname, 'public', 'manifest.json'));
+});
+
+app.get('/manifest-customer.json', (req, res) => {
+    console.log('✅ manifest-customer.json requested');  // ← add this
+    res.setHeader('ngrok-skip-browser-warning', 'true');
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(path.join(__dirname, 'public', 'manifest-customer.json'));
+});
+
 // ── Static files ──────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
 
 // ── Session ───────────────────────────────
 app.use(session({
@@ -122,7 +146,7 @@ app.use(session({
     }
 }));
 
-app.use(cookieParser());
+
 
 // ── Global middleware ─────────────────────
 // Every request checks setup first

@@ -73,29 +73,29 @@ document.addEventListener('keydown', e => {
 
 // ── PWA ───────────────────────────────────
 // Theme toggle
-const THEME_KEY    = 'herbguard-theme';
-const themeToggle  = document.getElementById('theme-toggle');
+//const THEME_KEY    = 'herbguard-theme';
+// const themeToggle  = document.getElementById('theme-toggle');
 
-function applyTheme(theme) {
-  document.body.classList.toggle('light-theme', theme === 'light');
-  const metaTheme = document.getElementById('theme-color-meta');
-  if (metaTheme) {
-    metaTheme.content = theme === 'light' ? '#ffffff' : '#161b22';
-  }
-}
+// function applyTheme(theme) {
+//   document.body.classList.toggle('light-theme', theme === 'light');
+//   const metaTheme = document.getElementById('theme-color-meta');
+//   if (metaTheme) {
+//     metaTheme.content = theme === 'light' ? '#ffffff' : '#161b22';
+//   }
+// }
 
-const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
-applyTheme(savedTheme);
+// //const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+// applyTheme(savedTheme);
 
-if (themeToggle) {
-  themeToggle.addEventListener('click', () => {
-    const isLight  = document.body.classList.contains('light-theme');
-    const newTheme = isLight ? 'dark' : 'light';
-    applyTheme(newTheme);
-    localStorage.setItem(THEME_KEY, newTheme);
-    lucide.createIcons();
-  });
-}
+// if (themeToggle) {
+//   themeToggle.addEventListener('click', () => {
+//     const isLight  = document.body.classList.contains('light-theme');
+//     const newTheme = isLight ? 'dark' : 'light';
+//     applyTheme(newTheme);
+//     localStorage.setItem(THEME_KEY, newTheme);
+//     lucide.createIcons();
+//   });
+// }
 
 // Service worker
 if ('serviceWorker' in navigator) {
@@ -106,8 +106,8 @@ if ('serviceWorker' in navigator) {
 }
 
 // Install prompt
-let deferredPrompt = null;
-const installBtn   = document.getElementById('pwa-install-btn');
+//let deferredPrompt = null;
+//const installBtn   = document.getElementById('pwa-install-btn');
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();

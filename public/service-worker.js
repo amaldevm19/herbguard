@@ -1,13 +1,10 @@
 // public/service-worker.js
 // HerbGuard PWA Service Worker
 
-const CACHE_NAME    = 'herbguard-v1';
-const OFFLINE_URL   = '/offline';
+const CACHE_NAME  = 'herbguard-v3';  // ← bumped to force fresh install
+const OFFLINE_URL = '/offline';
 
-// Assets to cache on install
-// Only static shell — never API or sensor data
 const STATIC_ASSETS = [
-  '/',
   '/offline',
   '/css/main.css',
   '/css/dashboard.css',
@@ -21,21 +18,15 @@ const STATIC_ASSETS = [
   '/js/plant-detail.js',
   '/js/customer.js',
   '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap',
-  'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
+  '/icons/icon-512x512.png'
 ];
 
 // ── Install ───────────────────────────────
-// Cache all static assets when SW first installs
 self.addEventListener('install', event => {
-  console.log('[SW] Installing...');
+  console.log('[SW] Installing v3...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[SW] Caching static assets');
-        // Cache what we can — don't fail if some external URLs miss
         return Promise.allSettled(
           STATIC_ASSETS.map(url =>
             cache.add(url).catch(err =>
@@ -49,9 +40,8 @@ self.addEventListener('install', event => {
 });
 
 // ── Activate ──────────────────────────────
-// Remove old caches when SW activates
 self.addEventListener('activate', event => {
-  console.log('[SW] Activating...');
+  console.log('[SW] Activating v3...');
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
@@ -66,63 +56,70 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ── Fetch ─────────────────────────────────
-// Network-first for API and HTML pages
-// Cache-first for static assets
+// ── Fetch — single handler ────────────────
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Skip non-GET requests
+  // Skip non-GET
   if (event.request.method !== 'GET') return;
 
-  // Skip API calls — always fresh data
+  // Skip API — always live data
   if (url.pathname.startsWith('/api/')) return;
 
-  // Skip socket/websocket
+  // Skip websocket
   if (event.request.headers.get('upgrade') === 'websocket') return;
 
-  // Static assets — cache first, network fallback
+  // Never cache manifests — always fetch fresh from server
+  if (url.pathname.includes('manifest')) return;
+
+  // Never cache ngrok warning pages
+  // If response is not ok or wrong content type, don't cache
+  if (url.hostname.includes('ngrok')) return;
+
+  // CSS, JS, icons — cache first, network fallback
   if (
-    url.pathname.startsWith('/css/') ||
-    url.pathname.startsWith('/js/')  ||
-    url.pathname.startsWith('/icons/') ||
-    url.pathname.startsWith('/uploads/')||
-    url.pathname.startsWith('/p/')
+    url.pathname.startsWith('/css/')    ||
+    url.pathname.startsWith('/js/')     ||
+    url.pathname.startsWith('/icons/')  ||
+    url.pathname.startsWith('/uploads/')
   ) {
     event.respondWith(
       caches.match(event.request)
-        .then(cached => cached || fetch(event.request)
-          .then(response => {
-            // Cache a copy of new static assets
+        .then(cached => {
+          if (cached) return cached;
+          return fetch(event.request).then(response => {
+            // Only cache valid responses
+            if (!response || response.status !== 200) return response;
             const clone = response.clone();
             caches.open(CACHE_NAME)
               .then(cache => cache.put(event.request, clone));
             return response;
-          })
-        )
+          });
+        })
     );
     return;
   }
 
-  // HTML pages — network first, offline fallback
+  // All HTML pages (/, /plant/x, /p/x, /plants, /settings)
+  // Network first, cache fallback, offline page last resort
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Cache a copy of successful HTML responses
+        // Only cache valid HTML responses
+        if (!response || response.status !== 200) return response;
         const clone = response.clone();
         caches.open(CACHE_NAME)
           .then(cache => cache.put(event.request, clone));
         return response;
       })
       .catch(() => {
-        // Offline — try cache first
         return caches.match(event.request)
           .then(cached => cached || caches.match(OFFLINE_URL));
       })
   );
 });
 
-// ── Background sync message ───────────────
+// ── Message ───────────────────────────────
 self.addEventListener('message', event => {
   if (event.data === 'SKIP_WAITING') {
     self.skipWaiting();
