@@ -827,3 +827,7 @@ body.light-theme .auth-input-wrap input[type="date"] {
   border-color: var(--border);
   transform: scale(1.15);
 }
+
+.pm-pot-id {
+  color: #ffffff !important;
+}

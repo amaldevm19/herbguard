@@ -110,18 +110,117 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 
-// Serve manifests as routes so ngrok header applies
+// ── Manifest routes — dynamic so ngrok header always applies ──
+/*
 app.get('/manifest.json', (req, res) => {
-  res.setHeader('ngrok-skip-browser-warning', 'true');
-  res.setHeader('Content-Type', 'application/json');
-  res.sendFile(path.join(__dirname, 'public', 'manifest.json'));
-});
+  console.log('✅ manifest.json requested');
+  res.setHeader('Content-Type', 'application/manifest+json');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  if(req.query.entry === 'customer') {
+        return res.json({
+            name: 'HerbGuard Plant Monitor',
+            short_name: 'HerbGuard',
+            description: 'Smart plant monitoring dashboard',
+            start_url: '/p/last',
+            display: 'standalone',
+            orientation: 'any',
+            theme_color: '#161b22',
+            background_color: '#0d1117',
+            scope: '/',
+            icons: [
+            { src: '/icons/icon-72x72.png',  sizes: '72x72',  type: 'image/png', purpose: 'maskable any' },
+            { src: '/icons/icon-96x96.png',  sizes: '96x96',  type: 'image/png', purpose: 'maskable any' },
+            { src: '/icons/icon-192x192.png',sizes: '192x192',type: 'image/png', purpose: 'maskable any' },
+            { src: '/icons/icon-512x512.png',sizes: '512x512',type: 'image/png', purpose: 'maskable any' }
+            ],
+            shortcuts: [
+            { name: 'Dashboard', url: '/',       icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] },
+            { name: 'Plants',    url: '/plants', icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] }
+            ],
+            categories: ['productivity', 'utilities'],
+            lang: 'en'
+        });
+    } 
 
-app.get('/manifest-customer.json', (req, res) => {
-    console.log('✅ manifest-customer.json requested');  // ← add this
-    res.setHeader('ngrok-skip-browser-warning', 'true');
-    res.setHeader('Content-Type', 'application/json');
-    res.sendFile(path.join(__dirname, 'public', 'manifest-customer.json'));
+    res.json({
+            name: 'HerbGuard Plant Monitor',
+            short_name: 'HerbGuard',
+            description: 'Smart plant monitoring dashboard',
+            start_url: '/',
+            display: 'standalone',
+            orientation: 'any',
+            theme_color: '#161b22',
+            background_color: '#0d1117',
+            scope: '/',
+            icons: [
+            { src: '/icons/icon-72x72.png',  sizes: '72x72',  type: 'image/png', purpose: 'maskable any' },
+            { src: '/icons/icon-96x96.png',  sizes: '96x96',  type: 'image/png', purpose: 'maskable any' },
+            { src: '/icons/icon-192x192.png',sizes: '192x192',type: 'image/png', purpose: 'maskable any' },
+            { src: '/icons/icon-512x512.png',sizes: '512x512',type: 'image/png', purpose: 'maskable any' }
+            ],
+            shortcuts: [
+            { name: 'Dashboard', url: '/',       icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] },
+            { name: 'Plants',    url: '/plants', icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] }
+            ],
+            categories: ['productivity', 'utilities'],
+            lang: 'en'
+        });
+
+});
+*/
+
+app.get('/manifest.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/manifest+json');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+
+  // Customer manifest when ?entry=customer
+  if (req.query.entry === 'customer') {
+    return res.json({
+      name: 'HerbGuard Plants',
+      short_name: 'HerbGuard',
+      description: 'Scan and explore office plants',
+      start_url: '/p/last',
+      display: 'standalone',
+      orientation: 'portrait',
+      theme_color: '#161b22',
+      background_color: '#0d1117',
+      scope: '/',
+      icons: [
+        { src: '/icons/icon-72x72.png',  sizes: '72x72',  type: 'image/png', purpose: 'maskable any' },
+        { src: '/icons/icon-192x192.png',sizes: '192x192',type: 'image/png', purpose: 'maskable any' },
+        { src: '/icons/icon-512x512.png',sizes: '512x512',type: 'image/png', purpose: 'maskable any' }
+      ],
+      categories: ['lifestyle', 'utilities'],
+      lang: 'en'
+    });
+  }
+
+  // Default client manifest
+  res.json({
+    name: 'HerbGuard Plant Monitor',
+    short_name: 'HerbGuard',
+    description: 'Smart plant monitoring dashboard',
+    start_url: '/',
+    display: 'standalone',
+    orientation: 'any',
+    theme_color: '#161b22',
+    background_color: '#0d1117',
+    scope: '/',
+    icons: [
+      { src: '/icons/icon-72x72.png',  sizes: '72x72',  type: 'image/png', purpose: 'maskable any' },
+      { src: '/icons/icon-96x96.png',  sizes: '96x96',  type: 'image/png', purpose: 'maskable any' },
+      { src: '/icons/icon-192x192.png',sizes: '192x192',type: 'image/png', purpose: 'maskable any' },
+      { src: '/icons/icon-512x512.png',sizes: '512x512',type: 'image/png', purpose: 'maskable any' }
+    ],
+    shortcuts: [
+      { name: 'Dashboard', url: '/',       icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] },
+      { name: 'Plants',    url: '/plants', icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] }
+    ],
+    categories: ['productivity', 'utilities'],
+    lang: 'en'
+  });
 });
 
 // ── Static files ──────────────────────────

@@ -118,7 +118,7 @@ document.addEventListener('keydown', e => {
 // ── Service Worker registration ───────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
+    navigator.serviceWorker.register('/sw.js')
       .then(reg => {
         console.log('[HerbGuard] SW registered:', reg.scope);
 
