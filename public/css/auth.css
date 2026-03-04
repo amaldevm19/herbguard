@@ -1,0 +1,199 @@
+/* ═══════════════════════════════════════════
+   HERBGUARD — Auth Pages
+   Setup · Login · (shared by both)
+═══════════════════════════════════════════ */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--bg);
+}
+
+/* Brand */
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.auth-brand-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--green);
+}
+
+.auth-brand-name {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: -0.02em;
+}
+
+/* Card */
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card-header { text-align: center; margin-bottom: 1.5rem; }
+
+.auth-card-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--green-dim);
+  border: 1px solid rgba(46,160,67,0.3);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: var(--green);
+}
+
+.auth-card-icon svg { width: 24px; height: 24px; }
+
+.auth-card-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.auth-card-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Alerts */
+.auth-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+}
+
+.auth-alert svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.auth-alert-error {
+  background: var(--red-dim);
+  color: var(--red);
+  border-color: rgba(248,81,73,0.25);
+}
+
+.auth-alert-success {
+  background: var(--green-dim);
+  color: var(--green);
+  border-color: rgba(46,160,67,0.25);
+}
+
+/* Form */
+.auth-form { display: flex; flex-direction: column; gap: 1rem; }
+
+.auth-field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.auth-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.auth-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 0.9rem;
+  transition: border-color 0.15s;
+}
+
+.auth-input-wrap:focus-within {
+  border-color: var(--green-mid);
+}
+
+.auth-input-wrap svg {
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.auth-input-wrap input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0.7rem 0;
+  font-size: 0.88rem;
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+.auth-input-wrap input::placeholder { color: var(--muted2); }
+.auth-input-wrap input:disabled     { color: var(--muted); cursor: not-allowed; }
+
+.auth-input-disabled { opacity: 0.6; }
+
+.auth-hint {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* Submit button */
+.auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--green-mid);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 0.5rem;
+}
+
+.auth-btn:hover { background: #268f3e; }
+.auth-btn svg   { width: 16px; height: 16px; }
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.form-actions .auth-btn {
+  flex: 1;
+  margin-top: 0;
+}
+
+.form-actions .btn-ghost {
+  flex-shrink: 0;
+  padding: 0.75rem 1.2rem;
+  white-space: nowrap;
+}

@@ -1,0 +1,304 @@
+<div class="plant-form-page">
+
+  <div class="breadcrumb" style="margin-bottom:1.5rem">
+    <a href="/plants" class="back-link">
+      <i data-lucide="arrow-left"></i>
+      Plant Management
+    </a>
+    <span class="bc-sep">/</span>
+    <span class="bc-current">
+      {{#if plant}}Edit {{plant.plant_name}}{{else}}Add New Plant{{/if}}
+    </span>
+  </div>
+
+  <h1 class="page-title">
+    {{#if plant}}Edit Plant{{else}}Add New Plant{{/if}}
+  </h1>
+  <p class="page-sub" style="margin-bottom:1.5rem">
+    {{#if plant}}
+      Update details for {{plant.plant_name}}
+    {{else}}
+      Register a new plant pot in the system
+    {{/if}}
+  </p>
+
+  {{#if error}}
+  <div class="settings-alert alert-error" style="margin-bottom:1.5rem">
+    <i data-lucide="triangle-alert"></i>
+    <span>{{error}}</span>
+  </div>
+  {{/if}}
+
+  <form method="POST"
+    action="{{#if plant}}/plants/{{plant.pot_id}}/edit{{else}}/plants/new{{/if}}"
+    class="plant-form">
+
+    <!-- Identity section -->
+    <div class="pf-section">
+      <div class="pf-section-title">
+        <i data-lucide="leaf"></i> Plant Identity
+      </div>
+      <div class="pf-grid-3">
+
+        <div class="auth-field">
+          <label class="auth-label">Pot ID</label>
+          <div class="auth-input-wrap {{#if plant}}auth-input-disabled{{/if}}">
+            <i data-lucide="hash"></i>
+            <input
+              type="text"
+              name="pot_id"
+              value="{{#if plant}}{{plant.pot_id}}{{else}}{{nextPotId}}{{/if}}"
+              {{#if plant}}readonly{{/if}}
+              required
+            />
+          </div>
+          {{#unless plant}}
+          <span class="auth-hint">Auto-generated, you can change it</span>
+          {{/unless}}
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Plant Name *</label>
+          <div class="auth-input-wrap">
+            <i data-lucide="leaf"></i>
+            <input
+              type="text"
+              name="plant_name"
+              placeholder="e.g. Basil"
+              value="{{#if plant}}{{plant.plant_name}}{{/if}}"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Emoji</label>
+          <div class="emoji-picker-wrap">
+            <input type="hidden" name="emoji" id="emoji-input"
+              value="{{#if plant}}{{plant.emoji}}{{else}}🌿{{/if}}"/>
+            <button type="button" class="emoji-selected" id="emoji-selected-btn"
+              onclick="toggleEmojiPicker()">
+              <span id="emoji-display">{{#if plant}}{{plant.emoji}}{{else}}🌿{{/if}}</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="emoji-grid" id="emoji-grid"  >
+              {{! Plant emojis }}
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌿')">🌿</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌱')">🌱</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌾')">🌾</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🍀')">🍀</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌵')">🌵</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌴')">🌴</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌲')">🌲</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌳')">🌳</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🪴')">🪴</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🍃')">🍃</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🍂')">🍂</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🍁')">🍁</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌸')">🌸</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌺')">🌺</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌻')">🌻</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌹')">🌹</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌷')">🌷</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('💐')">💐</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🍵')">🍵</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌿')">🫚</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🧄')">🧄</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🧅')">🧅</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🫛')">🫛</button>
+              <button type="button" class="emoji-opt" onclick="selectEmoji('🌶️')">🌶️</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Species</label>
+          <div class="auth-input-wrap">
+            <i data-lucide="dna"></i>
+            <input
+              type="text"
+              name="species"
+              placeholder="e.g. Ocimum basilicum"
+              value="{{#if plant}}{{plant.species}}{{/if}}"
+            />
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Family</label>
+          <div class="auth-input-wrap">
+            <i data-lucide="git-branch"></i>
+            <input
+              type="text"
+              name="family"
+              placeholder="e.g. Lamiaceae"
+              value="{{#if plant}}{{plant.family}}{{/if}}"
+            />
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Location in Office</label>
+          <div class="auth-input-wrap">
+            <i data-lucide="map-pin"></i>
+            <input
+              type="text"
+              name="location"
+              placeholder="e.g. Reception Desk"
+              value="{{#if plant}}{{plant.location}}{{/if}}"
+            />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="auth-field" style="margin-top:0.75rem">
+        <label class="auth-label">Description</label>
+        <div class="pf-textarea-wrap">
+          <textarea
+            name="description"
+            rows="3"
+            placeholder="Brief description of the plant and its properties..."
+            class="pf-textarea"
+          >{{#if plant}}{{plant.description}}{{/if}}</textarea>
+        </div>
+      </div>
+
+      <div class="auth-field" style="margin-top:0.75rem">
+        <label class="auth-label">Uses & Benefits</label>
+        <div class="auth-input-wrap">
+          <i data-lucide="list"></i>
+          <input
+            type="text"
+            name="uses"
+            placeholder="Culinary, Anti-inflammatory, Digestive aid"
+            value="{{#if plant}}{{plant.uses}}{{/if}}"
+          />
+        </div>
+        <span class="auth-hint">Comma separated list</span>
+      </div>
+
+      <div class="auth-field" style="margin-top:0.75rem">
+        <label class="auth-label">Installed Date</label>
+        <div class="auth-input-wrap">
+          <i data-lucide="calendar"></i>
+          <input
+            type="date"
+            name="installed_date"
+            value="{{#if plant}}{{plant.installed_date}}{{/if}}"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Optimal ranges section -->
+    <div class="pf-section">
+      <div class="pf-section-title">
+        <i data-lucide="sliders-horizontal"></i> Optimal Sensor Ranges
+      </div>
+      <p class="pf-section-sub">
+        These values define healthy ranges for alerts and color indicators
+      </p>
+
+      <div class="pf-ranges-grid">
+
+        <div class="pf-range-group">
+          <div class="pf-range-label">
+            <i data-lucide="droplets"></i> Moisture (%)
+          </div>
+          <div class="pf-range-inputs">
+            <div class="auth-input-wrap">
+              <span class="pf-range-prefix">Min</span>
+              <input type="number" name="optimal_moisture_min" step="0.1"
+                value="{{#if plant}}{{plant.optimal_moisture_min}}{{else}}30{{/if}}"/>
+            </div>
+            <span class="pf-range-sep">—</span>
+            <div class="auth-input-wrap">
+              <span class="pf-range-prefix">Max</span>
+              <input type="number" name="optimal_moisture_max" step="0.1"
+                value="{{#if plant}}{{plant.optimal_moisture_max}}{{else}}60{{/if}}"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-range-group">
+          <div class="pf-range-label">
+            <i data-lucide="thermometer"></i> Temperature (°C)
+          </div>
+          <div class="pf-range-inputs">
+            <div class="auth-input-wrap">
+              <span class="pf-range-prefix">Min</span>
+              <input type="number" name="optimal_temp_min" step="0.1"
+                value="{{#if plant}}{{plant.optimal_temp_min}}{{else}}18{{/if}}"/>
+            </div>
+            <span class="pf-range-sep">—</span>
+            <div class="auth-input-wrap">
+              <span class="pf-range-prefix">Max</span>
+              <input type="number" name="optimal_temp_max" step="0.1"
+                value="{{#if plant}}{{plant.optimal_temp_max}}{{else}}28{{/if}}"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-range-group">
+          <div class="pf-range-label">
+            <i data-lucide="flask-conical"></i> pH Range
+          </div>
+          <div class="pf-range-inputs">
+            <div class="auth-input-wrap">
+              <span class="pf-range-prefix">Min</span>
+              <input type="number" name="optimal_ph_min" step="0.1"
+                value="{{#if plant}}{{plant.optimal_ph_min}}{{else}}6.0{{/if}}"/>
+            </div>
+            <span class="pf-range-sep">—</span>
+            <div class="auth-input-wrap">
+              <span class="pf-range-prefix">Max</span>
+              <input type="number" name="optimal_ph_max" step="0.1"
+                value="{{#if plant}}{{plant.optimal_ph_max}}{{else}}7.0{{/if}}"/>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="pf-actions">
+      <button type="submit" class="btn btn-primary">
+        <i data-lucide="{{#if plant}}check{{else}}plus{{/if}}"></i>
+        {{#if plant}}Save Changes{{else}}Add Plant{{/if}}
+      </button>
+      <a href="/plants" class="btn btn-ghost">Cancel</a>
+    </div>
+
+  </form>
+  <script>
+    function toggleEmojiPicker() {
+  const grid = document.getElementById('emoji-grid');
+  const btn  = document.getElementById('emoji-selected-btn');
+  const isOpen = grid.classList.contains('visible');
+  if (isOpen) {
+    grid.classList.remove('visible');
+    btn.classList.remove('open');
+  } else {
+    grid.classList.add('visible');
+    btn.classList.add('open');
+  }
+}
+
+function selectEmoji(emoji) {
+  document.getElementById('emoji-input').value        = emoji;
+  document.getElementById('emoji-display').textContent = emoji;
+  document.getElementById('emoji-grid').classList.remove('visible');
+  document.getElementById('emoji-selected-btn').classList.remove('open');
+}
+
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.emoji-picker-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('emoji-grid').classList.remove('visible');
+    document.getElementById('emoji-selected-btn').classList.remove('open');
+  }
+});
+  </script>
+</div>

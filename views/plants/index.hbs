@@ -1,0 +1,96 @@
+<!-- Plant Management Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Plant Management</h1>
+    <p class="page-sub">{{plants.length}} plants registered</p>
+  </div>
+  <a href="/plants/new" class="btn btn-primary">
+    <i data-lucide="plus"></i>
+    Add New Plant
+  </a>
+</div>
+
+{{#if success}}
+<div class="settings-alert alert-success" style="margin-bottom:1.5rem">
+  <i data-lucide="check-circle"></i>
+  <span>{{success}}</span>
+</div>
+{{/if}}
+
+{{#if error}}
+<div class="settings-alert alert-error" style="margin-bottom:1.5rem">
+  <i data-lucide="triangle-alert"></i>
+  <span>{{error}}</span>
+</div>
+{{/if}}
+
+{{#if plants.length}}
+<div class="pm-grid">
+  {{#each plants}}
+  <div class="pm-card">
+
+    <!-- Image / Emoji banner -->
+    <div class="pm-card-banner">
+      {{#if primaryImage}}
+        <img src="{{primaryImage}}" alt="{{plant_name}}" class="pm-card-img"/>
+      {{else}}
+        <div class="pm-card-emoji">{{emoji}}</div>
+      {{/if}}
+      <span class="pm-pot-id">{{pot_id}}</span>
+      {{#if qr_local_url}}
+      <span class="pm-qr-badge">
+        <i data-lucide="qr-code"></i> QR Ready
+      </span>
+      {{/if}}
+    </div>
+
+    <!-- Info -->
+    <div class="pm-card-body">
+      <div class="pm-card-name">{{plant_name}}</div>
+      <div class="pm-card-species">{{species}}</div>
+      {{#if location}}
+      <div class="pm-card-location">
+        <i data-lucide="map-pin"></i>
+        {{location}}
+      </div>
+      {{/if}}
+
+      <!-- Uses chips -->
+      {{#if uses.length}}
+      <div class="pm-uses">
+        {{#each uses}}
+        <span class="pm-use-chip">{{this}}</span>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      <!-- Actions -->
+      <div class="pm-card-actions">
+        <a href="/plants/{{pot_id}}" class="btn btn-ghost btn-sm">
+          <i data-lucide="settings-2"></i>
+          Manage
+        </a>
+        <a href="/plant/{{pot_id}}" class="btn btn-primary btn-sm">
+          <i data-lucide="bar-chart-2"></i>
+          Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+</div>
+
+{{else}}
+<!-- Empty state -->
+<div class="pm-empty">
+  <div class="pm-empty-icon">🌱</div>
+  <h2 class="pm-empty-title">No plants yet</h2>
+  <p class="pm-empty-sub">
+    Add your first plant to start monitoring
+  </p>
+  <a href="/plants/new" class="btn btn-primary">
+    <i data-lucide="plus"></i>
+    Add First Plant
+  </a>
+</div>
+{{/if}}

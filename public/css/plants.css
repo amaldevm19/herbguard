@@ -1,0 +1,829 @@
+/* ═══════════════════════════════════════════
+   HERBGUARD — Plant Management CSS
+═══════════════════════════════════════════ */
+
+/* ── Plant grid ──────────────────────────── */
+.pm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+.pm-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.pm-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--muted2);
+}
+
+.pm-card-banner {
+  position: relative;
+  height: 140px;
+  background: linear-gradient(135deg, #1a3a1a, #0d2218);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pm-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pm-card-emoji {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+
+.pm-pot-id {
+  position: absolute;
+  top: 8px; left: 8px;
+  background: rgba(13,17,23,0.82);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+.pm-qr-badge {
+  position: absolute;
+  bottom: 8px; right: 8px;
+  background: var(--green-dim);
+  border: 1px solid rgba(46,160,67,0.3);
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.62rem;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pm-qr-badge svg { width: 10px; height: 10px; }
+
+.pm-card-body { padding: 1rem 1.1rem; }
+
+.pm-card-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.pm-card-species {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.pm-card-location {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+
+.pm-card-location svg { width: 11px; height: 11px; }
+
+.pm-uses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.pm-use-chip {
+  font-size: 0.6rem;
+  padding: 0.15rem 0.45rem;
+  background: var(--surface2);
+  border-radius: 4px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.pm-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+/* Empty state */
+.pm-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.pm-empty-icon  { font-size: 4rem; margin-bottom: 1rem; }
+.pm-empty-title { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.5rem; }
+.pm-empty-sub   { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+/* ── Plant form ───────────────────────────── */
+.plant-form-page { max-width: 780px; }
+
+.plant-form { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.pf-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.pf-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.pf-section-title svg { width: 16px; height: 16px; color: var(--green); }
+
+.pf-section-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pf-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.pf-textarea-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s;
+}
+
+.pf-textarea-wrap:focus-within { border-color: var(--green-mid); }
+
+.pf-textarea {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.88rem;
+  color: var(--text);
+  font-family: var(--font-sans);
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.pf-ranges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.pf-range-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.pf-range-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.pf-range-label svg { width: 13px; height: 13px; }
+
+.pf-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pf-range-inputs .auth-input-wrap { flex: 1; }
+
+.pf-range-inputs input {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0.6rem 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+.pf-range-prefix {
+  font-size: 0.6rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.pf-range-sep {
+  color: var(--muted2);
+  font-size: 0.9rem;
+}
+
+.pf-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* ── Plant detail page ───────────────────── */
+.pm-detail-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pm-detail-emoji {
+  font-size: 3rem;
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #1a3a1a, #0d2218);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pm-detail-info  { flex: 1; min-width: 0; }
+.pm-detail-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.pm-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.pm-detail-col { display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* Images */
+.pm-images-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.pm-image-item {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.pm-image-primary { border-color: var(--green-mid); }
+
+.pm-image-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.pm-primary-badge {
+  position: absolute;
+  top: 4px; left: 4px;
+  background: var(--green-mid);
+  color: #fff;
+  font-size: 0.55rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+
+.pm-image-actions {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.pm-no-images {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.pm-upload-form {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+/* QR */
+.qr-type-btns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.qr-type-btn.active {
+  background: var(--green-dim);
+  border-color: rgba(46,160,67,0.35);
+  color: var(--green);
+}
+
+.qr-display {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.qr-url-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  word-break: break-all;
+  margin-top: 0.5rem;
+  max-width: 220px;
+  margin-inline: auto;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+/* Optimal grid */
+.pm-optimal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.pm-opt-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1rem;
+  border-right: 1px solid var(--border2);
+  text-align: center;
+}
+
+.pm-opt-item:last-child { border-right: none; }
+.pm-opt-item svg        { width: 18px; height: 18px; color: var(--green); }
+.pm-opt-label { font-size: 0.68rem; color: var(--muted); }
+.pm-opt-val   { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .pm-detail-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .pf-grid-3      { grid-template-columns: 1fr 1fr; }
+  .pf-ranges-grid { grid-template-columns: 1fr; }
+  .pm-optimal-grid { grid-template-columns: repeat(2, 1fr); }
+  .pm-optimal-grid .pm-opt-item:nth-child(2) { border-right: none; }
+  .pm-optimal-grid .pm-opt-item:nth-child(3) { border-top: 1px solid var(--border2); }
+  .pm-optimal-grid .pm-opt-item:nth-child(4) { border-top: 1px solid var(--border2); }
+}
+
+@media (max-width: 480px) {
+  .pf-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Form action buttons */
+.pf-actions .btn-primary {
+  background: var(--green-mid);
+  color: #ffffff;
+  border-color: var(--green-mid);
+  padding: 0.65rem 1.5rem;
+}
+
+.pf-actions .btn-primary:hover {
+  background: #268f3e;
+  border-color: #268f3e;
+}
+
+.pf-actions .btn-ghost {
+  padding: 0.65rem 1.25rem;
+}
+
+/* ── Dark mode button fixes ──────────────── */
+
+/* Upload image button */
+.pm-upload-form .btn-ghost {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--surface2);
+}
+
+.pm-upload-form .btn-ghost:hover {
+  background: var(--surface3);
+  border-color: var(--muted2);
+}
+
+/* Generate QR Code button */
+.settings-card .btn-primary[onclick="generateQR()"] {
+  background: var(--green-mid);
+  color: #ffffff;
+  border-color: var(--green-mid);
+}
+
+.settings-card .btn-primary[onclick="generateQR()"]:hover {
+  background: #268f3e;
+}
+
+/* QR action buttons — Download, Print, Save */
+.qr-actions .btn-ghost,
+.qr-actions .btn-primary {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--surface2);
+}
+
+.qr-actions .btn-primary {
+  background: var(--green-mid);
+  color: #ffffff;
+  border-color: var(--green-mid);
+}
+
+/* Remove Plant button */
+.btn-danger {
+  color: var(--red) !important;
+  border-color: rgba(248,81,73,0.3) !important;
+  background: var(--surface2) !important;
+}
+
+.btn-danger:hover {
+  background: var(--red-dim) !important;
+}
+
+/* Set Primary / delete image buttons */
+.pm-image-actions .btn-ghost {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--surface2);
+}
+
+.pm-image-actions .btn-ghost:hover {
+  background: var(--surface3);
+}
+
+/* File input styling fix for dark mode */
+.pm-upload-form .auth-input-wrap input[type="file"] {
+  color: var(--muted);
+}
+
+/* QR type selector buttons — Local Network / Public URL */
+.qr-type-btns .btn {
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+  background: var(--surface2) !important;
+}
+
+.qr-type-btns .btn:hover {
+  background: var(--surface3) !important;
+  border-color: var(--muted2) !important;
+}
+
+/* Active state — selected button */
+.qr-type-btns .btn.active {
+  background: var(--green-dim) !important;
+  border-color: rgba(46,160,67,0.35) !important;
+  color: var(--green) !important;
+}
+
+/* ── Image upload form ───────────────────── */
+.pm-upload-dropzone {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: var(--surface2);
+}
+
+.pm-upload-dropzone:hover,
+.pm-upload-dropzone.has-file {
+  border-color: var(--green-mid);
+  background: var(--green-dim);
+}
+
+.pm-upload-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pm-upload-icon {
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.pm-upload-icon svg { width: 28px; height: 28px; }
+
+.pm-upload-dropzone.has-file .pm-upload-icon { color: var(--green); }
+
+.pm-upload-text {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.pm-upload-hint {
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.pm-selected-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--green-dim);
+  border: 1px solid rgba(46,160,67,0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--green);
+  font-family: var(--font-mono);
+  margin-top: 0.5rem;
+  word-break: break-all;
+}
+
+.pm-selected-file svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+.pm-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  background: var(--green-mid);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pm-upload-btn:hover { background: #268f3e; }
+.pm-upload-btn svg   { width: 15px; height: 15px; }
+
+/* ── Breadcrumb ──────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--green);
+  font-size: 0.8rem;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+
+.back-link:hover { opacity: 0.75; }
+
+.back-link svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.bc-sep    { color: var(--muted2); }
+.bc-current { color: var(--muted); }
+
+/* ── Detail hero action buttons ──────────── */
+.pm-detail-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  padding: 0.45rem 0.9rem;
+  line-height: 1;
+}
+
+.pm-detail-actions .btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--green);
+}
+
+.pm-detail-actions .btn-primary svg {
+  color: #ffffff;
+}
+
+/* ── Page header ─────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ── Add New Plant button ────────────────── */
+.page-header .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  line-height: 1;
+  background: var(--green-mid);
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.page-header .btn:hover { background: #268f3e; }
+
+.page-header .btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #ffffff;
+}
+
+/* ── Plant card action buttons ───────────── */
+.pm-card-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  padding: 0.45rem 0.75rem;
+  line-height: 1;
+}
+
+.pm-card-actions .btn svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--green);
+}
+
+.pm-card-actions .btn-primary svg {
+  color: #ffffff;
+}
+
+.pm-card-actions .btn-ghost {
+  background: var(--surface2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.pm-card-actions .btn-ghost:hover {
+  background: var(--surface3);
+  border-color: var(--muted2);
+}
+
+
+/*----------------------------------------------------------------------*/
+/* ── Date input ──────────────────────────── */
+.auth-input-wrap input[type="date"] {
+  color-scheme: dark;        /* makes calendar dark in dark mode */
+  cursor: pointer;
+  width: 100%;
+}
+
+body.light-theme .auth-input-wrap input[type="date"] {
+  color-scheme: light;
+}
+
+/* Show the calendar icon */
+.auth-input-wrap input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.auth-input-wrap input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(0.8);
+  background: var(--surface3);
+}
+
+/* ── Emoji picker ────────────────────────── */
+.emoji-picker-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.emoji-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  font-size: 1.3rem;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.emoji-selected:hover,
+.emoji-selected.open { border-color: var(--green-mid); }
+
+.emoji-selected svg {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.emoji-grid {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem;
+  z-index: 200;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  /* Grid is controlled by JS show/hide */
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.3rem;
+  min-width: 220px; /* ← add this */
+  right: auto;  
+}
+
+.emoji-grid.visible {
+  display: grid;
+}
+
+.emoji-opt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: 1.4rem;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+  line-height: 1;
+  padding: 0.2rem;
+}
+
+.emoji-opt:hover {
+  background: var(--surface2);
+  border-color: var(--border);
+  transform: scale(1.15);
+}

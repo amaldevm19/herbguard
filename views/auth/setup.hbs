@@ -1,0 +1,64 @@
+<div class="auth-card">
+  <div class="auth-card-header">
+    <div class="auth-card-icon">
+      <i data-lucide="shield-check"></i>
+    </div>
+    <h1 class="auth-card-title">Welcome to HerbGuard</h1>
+    <p class="auth-card-sub">
+      First time setup — create your admin password to get started
+    </p>
+  </div>
+
+  {{#if error}}
+  <div class="auth-alert auth-alert-error">
+    <i data-lucide="triangle-alert"></i>
+    <span>{{error}}</span>
+  </div>
+  {{/if}}
+
+  <form class="auth-form" method="POST" action="/setup">
+    <div class="auth-field">
+      <label class="auth-label">Username</label>
+      <div class="auth-input-wrap auth-input-disabled">
+        <i data-lucide="user"></i>
+        <input type="text" value="admin" disabled/>
+      </div>
+      <span class="auth-hint">Admin username is fixed as "admin"</span>
+    </div>
+
+    <div class="auth-field">
+      <label class="auth-label" for="password">Password</label>
+      <div class="auth-input-wrap">
+        <i data-lucide="lock"></i>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Min. 8 characters"
+          required
+          minlength="8"
+          autofocus
+        />
+      </div>
+    </div>
+
+    <div class="auth-field">
+      <label class="auth-label" for="confirmPassword">Confirm Password</label>
+      <div class="auth-input-wrap">
+        <i data-lucide="lock-keyhole"></i>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          placeholder="Repeat your password"
+          required
+        />
+      </div>
+    </div>
+
+    <button type="submit" class="auth-btn">
+      <i data-lucide="arrow-right"></i>
+      Create Admin Account
+    </button>
+  </form>
+</div>

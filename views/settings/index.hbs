@@ -1,0 +1,121 @@
+<div class="settings-page">
+  <div class="settings-header">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-sub">Manage your account and application preferences</p>
+  </div>
+
+  {{#if success}}
+  <div class="settings-alert alert-success">
+    <i data-lucide="check-circle"></i>
+    <span>{{success}}</span>
+  </div>
+  {{/if}}
+
+  {{#if error}}
+  <div class="settings-alert alert-error">
+    <i data-lucide="triangle-alert"></i>
+    <span>{{error}}</span>
+  </div>
+  {{/if}}
+
+  <!-- Account section -->
+  <div class="settings-section">
+    <div class="settings-section-title">
+      <i data-lucide="user-circle"></i>
+      My Account
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-row-info">
+          <div class="settings-row-label">Username</div>
+          <div class="settings-row-val">{{user.username}}</div>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-info">
+          <div class="settings-row-label">Role</div>
+          <div class="settings-row-val">{{user.role}}</div>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-info">
+          <div class="settings-row-label">Last Login</div>
+          <div class="settings-row-val">{{user.last_login}}</div>
+        </div>
+      </div>
+      <div class="settings-row settings-row-action">
+        <div class="settings-row-info">
+          <div class="settings-row-label">Password</div>
+          <div class="settings-row-sub">Change your login password</div>
+        </div>
+        <a href="/settings/change-password" class="btn btn-ghost btn-sm">
+          <i data-lucide="key-round"></i>
+          Change Password
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- User management — only shown when multiUserEnabled = true -->
+  {{#if multiUserEnabled}}
+  <div class="settings-section">
+    <div class="settings-section-title">
+      <i data-lucide="users"></i>
+      User Management
+    </div>
+
+    <div class="settings-card">
+      {{#each users}}
+      <div class="settings-row settings-row-action">
+        <div class="settings-row-info">
+          <div class="settings-row-label">
+            {{username}}
+            {{#if (isGood role)}}
+            <span class="role-badge role-admin">admin</span>
+            {{else}}
+            <span class="role-badge role-staff">staff</span>
+            {{/if}}
+          </div>
+          <div class="settings-row-sub">
+            Created {{created_at}}
+          </div>
+        </div>
+        {{#unless (isAdmin role)}}
+        <form method="POST" action="/settings/users/delete">
+          <input type="hidden" name="userId" value="{{id}}"/>
+          <button type="submit" class="btn btn-ghost btn-sm btn-danger"
+            onclick="return confirm('Delete user {{username}}?')">
+            <i data-lucide="trash-2"></i>
+          </button>
+        </form>
+        {{/unless}}
+      </div>
+      {{/each}}
+    </div>
+
+    <!-- Add user form -->
+    <div class="settings-card" style="margin-top:1rem">
+      <div class="settings-card-title">Add New User</div>
+      <form method="POST" action="/settings/users/add" class="add-user-form">
+        <div class="add-user-fields">
+          <input type="text"     name="username" placeholder="Username" class="settings-input" required/>
+          <input type="password" name="password" placeholder="Temp password (min 8 chars)" class="settings-input" required/>
+          <select name="role" class="settings-input">
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.75rem">
+          <i data-lucide="user-plus"></i>
+          Add User
+        </button>
+      </form>
+      <p class="settings-hint">
+        New users will be prompted to change their password on first login.
+      </p>
+    </div>
+  </div>
+  {{/if}}
+
+</div>

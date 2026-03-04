@@ -1,0 +1,428 @@
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="/plants" class="back-link">
+    <i data-lucide="arrow-left"></i>
+    Plant Management
+  </a>
+  <span class="bc-sep">/</span>
+  <span class="bc-current">{{plant.plant_name}}</span>
+</div>
+
+{{#if success}}
+<div class="settings-alert alert-success" style="margin-bottom:1rem">
+  <i data-lucide="check-circle"></i><span>{{success}}</span>
+</div>
+{{/if}}
+{{#if error}}
+<div class="settings-alert alert-error" style="margin-bottom:1rem">
+  <i data-lucide="triangle-alert"></i><span>{{error}}</span>
+</div>
+{{/if}}
+
+<!-- Hero -->
+<div class="pm-detail-hero">
+  <div class="pm-detail-emoji">{{plant.emoji}}</div>
+  <div class="pm-detail-info">
+    <h1 class="page-title">{{plant.plant_name}}</h1>
+    <p class="page-sub">
+      <em>{{plant.species}}</em> · {{plant.family}}
+    </p>
+    <div class="detail-hero-tags" style="margin-top:0.75rem">
+      <span class="detail-tag">{{plant.pot_id}}</span>
+      {{#if plant.location}}
+      <span class="detail-tag">
+        <i data-lucide="map-pin"></i> {{plant.location}}
+      </span>
+      {{/if}}
+      {{#if plant.installed_date}}
+      <span class="detail-tag">
+        <i data-lucide="calendar"></i> {{plant.installed_date}}
+      </span>
+      {{/if}}
+    </div>
+  </div>
+  <div class="pm-detail-actions">
+    <a href="/p/{{plant.pot_id}}" target="_blank" class="btn btn-ghost">
+      <i data-lucide="eye"></i> Preview Customer Page
+    </a>
+    <a href="/plants/{{plant.pot_id}}/edit" class="btn btn-ghost">
+      <i data-lucide="pencil"></i> Edit
+    </a>
+    <a href="/plant/{{plant.pot_id}}" class="btn btn-primary">
+      <i data-lucide="bar-chart-2"></i> Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- Two column layout -->
+<div class="pm-detail-grid">
+
+  <!-- Left — Images -->
+  <div class="pm-detail-col">
+    <div class="settings-section-title">
+      <i data-lucide="image"></i> Plant Images
+    </div>
+
+    <div class="settings-card" style="padding:1.25rem">
+      {{#if images.length}}
+      <div class="pm-images-grid">
+        {{#each images}}
+        <div class="pm-image-item {{#if is_primary}}pm-image-primary{{/if}}">
+          <img
+            src="/uploads/plants/{{../plant.pot_id}}/{{filename}}"
+            alt="{{caption}}"
+            class="pm-image-thumb"
+          />
+          {{#if is_primary}}
+          <span class="pm-primary-badge">Primary</span>
+          {{/if}}
+          <div class="pm-image-actions">
+            {{#unless is_primary}}
+            <form method="POST"
+              action="/plants/{{../plant.pot_id}}/images/{{id}}/primary"
+              style="display:inline">
+              <button type="submit" class="btn btn-ghost btn-sm">
+                <i data-lucide="star"></i> Set Primary
+              </button>
+            </form>
+            {{/unless}}
+            <form method="POST"
+              action="/plants/{{../plant.pot_id}}/images/{{id}}/delete"
+              style="display:inline"
+              onsubmit="return confirm('Delete this image?')">
+              <button type="submit" class="btn btn-ghost btn-sm btn-danger">
+                <i data-lucide="trash-2"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+      {{else}}
+      <p class="pm-no-images">No images uploaded yet</p>
+      {{/if}}
+
+      <!-- Upload form -->
+      <form method="POST"
+        action="/plants/{{plant.pot_id}}/images"
+        enctype="multipart/form-data"
+        class="pm-upload-form">
+
+        <div class="pm-upload-dropzone" id="upload-dropzone">
+          <div class="pm-upload-icon">
+            <i data-lucide="image-plus"></i>
+          </div>
+          <div class="pm-upload-text">Click to choose image</div>
+          <div class="pm-upload-hint">JPG, PNG, WebP · Max 5MB · Up to 5 images</div>
+          <input type="file" name="image" accept="image/*" required
+            id="upload-input" class="pm-upload-input"/>
+        </div>
+
+        <div class="pm-selected-file" id="pm-selected-file" style="display:none">
+          <i data-lucide="image"></i>
+          <span id="pm-selected-name"></span>
+        </div>
+
+        <div class="auth-field" style="margin-top:0.75rem">
+          <label class="auth-label">Caption (optional)</label>
+          <div class="auth-input-wrap">
+            <i data-lucide="type"></i>
+            <input type="text" name="caption" placeholder="e.g. Flowering stage, Week 3"/>
+          </div>
+        </div>
+
+        <button type="submit" class="pm-upload-btn">
+          <i data-lucide="upload"></i>
+          Upload Image
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right — QR Code -->
+  <div class="pm-detail-col">
+    <div class="settings-section-title">
+      <i data-lucide="qr-code"></i> QR Code Generator
+    </div>
+
+    <div class="settings-card" style="padding:1.25rem">
+
+      <div class="qr-url-selector">
+        <div class="auth-field">
+          <label class="auth-label">Local Network URL</label>
+          <div class="auth-input-wrap">
+            <i data-lucide="wifi"></i>
+            <input type="text" id="qr-local-input"
+              placeholder="http://192.168.1.100:3000"
+              value="{{localUrl}}"/>
+          </div>
+          <span class="auth-hint">
+            Used for QR codes inside the office network
+          </span>
+        </div>
+
+        <div class="auth-field" style="margin-top:0.75rem">
+          <label class="auth-label">Public URL (optional)</label>
+          <div class="auth-input-wrap">
+            <i data-lucide="globe"></i>
+            <input type="text" id="qr-public-input"
+              placeholder="https://herbguard.com"
+              value="{{publicUrl}}"/>
+          </div>
+          <span class="auth-hint">
+            Leave empty if not configured yet
+          </span>
+        </div>
+
+        <div class="qr-type-selector" style="margin-top:1rem">
+          <label class="auth-label">Generate QR for</label>
+          <div class="qr-type-btns">
+            <button type="button" class="btn btn-ghost btn-sm qr-type-btn active"
+              id="qr-btn-local" onclick="selectQRType('local')">
+              <i data-lucide="wifi"></i> Local Network
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm qr-type-btn"
+              id="qr-btn-public" onclick="selectQRType('public')">
+              <i data-lucide="globe"></i> Public URL
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR display -->
+      <div class="qr-display" id="qr-display">
+        <div id="qr-canvas-wrap"></div>
+        <div class="qr-url-label" id="qr-url-label"></div>
+        <div class="qr-actions" id="qr-actions" style="display:none">
+          <button type="button" class="btn btn-ghost btn-sm"
+            onclick="downloadQR()">
+            <i data-lucide="download"></i> Download PNG
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm"
+            onclick="printQR()">
+            <i data-lucide="printer"></i> Print
+          </button>
+          <button type="button" class="btn btn-primary btn-sm"
+            onclick="saveQRUrls()">
+            <i data-lucide="save"></i> Save URLs
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary"
+        style="width:100%;margin-top:1rem"
+        onclick="generateQR()">
+        <i data-lucide="qr-code"></i> Generate QR Code
+      </button>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Optimal ranges summary -->
+<div class="settings-section-title" style="margin-top:1.5rem">
+  <i data-lucide="sliders-horizontal"></i> Optimal Conditions
+</div>
+<div class="settings-card">
+  <div class="pm-optimal-grid">
+    <div class="pm-opt-item">
+      <i data-lucide="droplets"></i>
+      <span class="pm-opt-label">Moisture</span>
+      <span class="pm-opt-val">
+        {{plant.optimalMoisture.[0]}}–{{plant.optimalMoisture.[1]}}%
+      </span>
+    </div>
+    <div class="pm-opt-item">
+      <i data-lucide="thermometer"></i>
+      <span class="pm-opt-label">Temperature</span>
+      <span class="pm-opt-val">
+        {{plant.optimalTemp.[0]}}–{{plant.optimalTemp.[1]}}°C
+      </span>
+    </div>
+    <div class="pm-opt-item">
+      <i data-lucide="flask-conical"></i>
+      <span class="pm-opt-label">pH Range</span>
+      <span class="pm-opt-val">
+        {{plant.optimalPh.[0]}}–{{plant.optimalPh.[1]}}
+      </span>
+    </div>
+    <div class="pm-opt-item">
+      <i data-lucide="map-pin"></i>
+      <span class="pm-opt-label">Location</span>
+      <span class="pm-opt-val">{{plant.location}}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Delete -->
+<div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+  <form method="POST" action="/plants/{{plant.pot_id}}/delete"
+    onsubmit="return confirm('Remove {{plant.plant_name}} from the system?')">
+    <button type="submit" class="btn btn-ghost btn-sm btn-danger">
+      <i data-lucide="trash-2"></i> Remove Plant
+    </button>
+  </form>
+</div>
+
+<!-- QR Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+  const POT_ID    = '{{plant.pot_id}}';
+  const PLANT_NAME = '{{plant.plant_name}}';
+  let   currentQRType = 'local';
+  let   currentQRUrl  = '';
+
+  function getLocalUrl() {
+    const base = document.getElementById('qr-local-input').value.trim()
+      .replace(/\/$/, '');
+    return base ? `${base}/p/${POT_ID}` : '';
+  }
+
+  function getPublicUrl() {
+    const base = document.getElementById('qr-public-input').value.trim()
+      .replace(/\/$/, '');
+    return base ? `${base}/p/${POT_ID}` : '';
+  }
+
+  function selectQRType(type) {
+    currentQRType = type;
+    document.getElementById('qr-btn-local').classList
+      .toggle('active', type === 'local');
+    document.getElementById('qr-btn-public').classList
+      .toggle('active', type === 'public');
+  }
+
+ function generateQR() {
+  const url = currentQRType === 'local' ? getLocalUrl() : getPublicUrl();
+
+  if (!url) {
+    alert(`Please enter a ${currentQRType === 'local'
+      ? 'Local Network' : 'Public'} URL first`);
+    return;
+  }
+
+  currentQRUrl = url;
+  const wrap   = document.getElementById('qr-canvas-wrap');
+  wrap.innerHTML = '';
+
+  // qrcode-generator API
+  const qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+
+  // Render as canvas
+  const size    = 220;
+  const canvas  = document.createElement('canvas');
+  canvas.id     = 'qr-canvas';
+  canvas.width  = size;
+  canvas.height = size;
+  wrap.appendChild(canvas);
+
+  const ctx      = canvas.getContext('2d');
+  const modules  = qr.getModuleCount();
+  const cellSize = size / modules;
+
+  // White background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+
+  // Dark modules
+  ctx.fillStyle = '#1f2328';
+  for (let row = 0; row < modules; row++) {
+    for (let col = 0; col < modules; col++) {
+      if (qr.isDark(row, col)) {
+        ctx.fillRect(
+          Math.floor(col * cellSize),
+          Math.floor(row * cellSize),
+          Math.ceil(cellSize),
+          Math.ceil(cellSize)
+        );
+      }
+    }
+  }
+
+  document.getElementById('qr-url-label').textContent = url;
+  document.getElementById('qr-actions').style.display = 'flex';
+}
+  function downloadQR() {
+    const canvas = document.getElementById('qr-canvas');
+    if (!canvas) return;
+    const link    = document.createElement('a');
+    link.download = `${POT_ID}-qr.png`;
+    link.href     = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  function printQR() {
+    const canvas = document.getElementById('qr-canvas');
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL('image/png');
+    const w = window.open('', '_blank');
+    w.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${PLANT_NAME} QR Code</title>
+        <style>
+          body {
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            min-height:100vh; margin:0; font-family:sans-serif;
+            background:#fff; color:#1f2328;
+          }
+          img   { width:220px; height:220px; margin-bottom:1rem; }
+          h2    { margin:0 0 0.5rem; font-size:1.4rem; }
+          p     { margin:0; font-size:0.8rem; color:#666; word-break:break-all; text-align:center; max-width:260px; }
+          small { display:block; margin-top:0.5rem; font-size:0.7rem; color:#999; }
+        </style>
+      </head>
+      <body>
+        <img src="${dataUrl}" alt="QR Code"/>
+        <h2>${PLANT_NAME}</h2>
+        <p>${currentQRUrl}</p>
+        <small>Scan to view plant details</small>
+        <script>window.onload = () => window.print();<\/script>
+      </body>
+      </html>
+    `);
+  }
+
+  async function saveQRUrls() {
+    const resp = await fetch(`/plants/${POT_ID}/qr`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        local_url:  document.getElementById('qr-local-input').value.trim(),
+        public_url: document.getElementById('qr-public-input').value.trim()
+      })
+    });
+    if (resp.ok) {
+      const btn = document.querySelector('[onclick="saveQRUrls()"]');
+      btn.innerHTML = '<i data-lucide="check"></i> Saved!';
+      btn.style.color = 'var(--green)';
+      lucide.createIcons();
+      setTimeout(() => {
+        btn.innerHTML = '<i data-lucide="save"></i> Save URLs';
+        btn.style.color = '';
+        lucide.createIcons();
+      }, 2000);
+    }
+  }
+
+  // File input preview
+const uploadInput = document.getElementById('upload-input');
+const selectedFile = document.getElementById('pm-selected-file');
+const selectedName = document.getElementById('pm-selected-name');
+const dropzone = document.getElementById('upload-dropzone');
+
+if (uploadInput) {
+  uploadInput.addEventListener('change', () => {
+    if (uploadInput.files.length > 0) {
+      selectedName.textContent = uploadInput.files[0].name;
+      selectedFile.style.display = 'flex';
+      dropzone.classList.add('has-file');
+    }
+  });
+}
+</script>

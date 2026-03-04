@@ -1,3 +1,7 @@
 node_modules/
 .env
 herbguard.db
+*.db-shm
+*.db-wal
+server1.js
+main.old.js

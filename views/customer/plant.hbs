@@ -1,0 +1,123 @@
+<!-- Hero section -->
+<div class="cp-hero">
+  {{#if primaryImage}}
+  <div class="cp-hero-image">
+    <img src="/uploads/plants/{{plant.pot_id}}/{{primaryImage.filename}}"
+      alt="{{plant.plant_name}}"/>
+  </div>
+  {{else}}
+  <div class="cp-hero-emoji">{{plant.emoji}}</div>
+  {{/if}}
+
+  <div class="cp-hero-info">
+    <div class="cp-pot-id">{{plant.pot_id}}</div>
+    <h1 class="cp-plant-name">{{plant.plant_name}}</h1>
+    <p class="cp-species">
+      <em>{{plant.species}}</em>
+      {{#if plant.family}}· {{plant.family}}{{/if}}
+    </p>
+    {{#if plant.location}}
+    <div class="cp-location">
+      <i data-lucide="map-pin"></i>
+      {{plant.location}}
+    </div>
+    {{/if}}
+  </div>
+</div>
+
+<!-- Description -->
+{{#if plant.description}}
+<div class="cp-section">
+  <p class="cp-description">{{plant.description}}</p>
+</div>
+{{/if}}
+
+<!-- Uses -->
+{{#if plant.uses.length}}
+<div class="cp-section">
+  <h2 class="cp-section-title">
+    <i data-lucide="heart"></i> Uses & Benefits
+  </h2>
+  <div class="cp-uses-grid">
+    {{#each plant.uses}}
+    <div class="cp-use-card">
+      <i data-lucide="check-circle"></i>
+      <span>{{this}}</span>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
+<!-- Image gallery -->
+{{#if images.length}}
+<div class="cp-section">
+  <h2 class="cp-section-title">
+    <i data-lucide="image"></i> Gallery
+  </h2>
+  <div class="cp-gallery">
+    {{#each images}}
+    <div class="cp-gallery-item">
+      <img
+        src="/uploads/plants/{{../plant.pot_id}}/{{filename}}"
+        alt="{{caption}}"
+        onclick="openLightbox(this.src)"
+      />
+      {{#if caption}}
+      <p class="cp-gallery-caption">{{caption}}</p>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+
+<!-- Optimal conditions -->
+<div class="cp-section">
+  <h2 class="cp-section-title">
+    <i data-lucide="sliders-horizontal"></i> Ideal Growing Conditions
+  </h2>
+  <div class="cp-conditions-grid">
+    <div class="cp-condition">
+      <div class="cp-condition-icon" style="color:var(--blue)">
+        <i data-lucide="droplets"></i>
+      </div>
+      <div class="cp-condition-label">Soil Moisture</div>
+      <div class="cp-condition-val">
+        {{plant.optimalMoisture.[0]}}–{{plant.optimalMoisture.[1]}}%
+      </div>
+    </div>
+    <div class="cp-condition">
+      <div class="cp-condition-icon" style="color:var(--amber)">
+        <i data-lucide="thermometer"></i>
+      </div>
+      <div class="cp-condition-label">Temperature</div>
+      <div class="cp-condition-val">
+        {{plant.optimalTemp.[0]}}–{{plant.optimalTemp.[1]}}°C
+      </div>
+    </div>
+    <div class="cp-condition">
+      <div class="cp-condition-icon" style="color:var(--purple)">
+        <i data-lucide="flask-conical"></i>
+      </div>
+      <div class="cp-condition-label">pH Level</div>
+      <div class="cp-condition-val">
+        {{plant.optimalPh.[0]}}–{{plant.optimalPh.[1]}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="cp-lightbox" id="cp-lightbox" onclick="closeLightbox()">
+  <img id="cp-lightbox-img" src="" alt=""/>
+</div>
+
+<!-- Pass pot ID to JS for visited history -->
+<script>
+  const CURRENT_POT = {
+    potId:     '{{plant.pot_id}}',
+    plantName: '{{plant.plant_name}}',
+    emoji:     '{{plant.emoji}}'
+  };
+</script>

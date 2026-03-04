@@ -1,0 +1,314 @@
+/* ═══════════════════════════════════════════
+   HERBGUARD — Settings Page
+═══════════════════════════════════════════ */
+
+.settings-page {
+  max-width: 720px;
+  margin: 0 auto;        /* ← centers it horizontally */
+  padding: 0 1rem;
+}
+
+.settings-header { margin-bottom: 1.5rem; }
+
+/* Alerts */
+.settings-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+}
+
+.settings-alert svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.alert-success {
+  background: var(--green-dim);
+  color: var(--green);
+  border-color: rgba(46,160,67,0.25);
+}
+
+.alert-error {
+  background: var(--red-dim);
+  color: var(--red);
+  border-color: rgba(248,81,73,0.25);
+}
+
+/* Sections */
+.settings-section { margin-bottom: 2rem; }
+
+.settings-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+.settings-section-title svg { width: 16px; height: 16px; color: var(--green); }
+
+/* Card */
+.settings-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.settings-card-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 1rem 1.25rem 0;
+  color: var(--text);
+}
+
+/* Rows */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border2);
+  gap: 1rem;
+}
+
+.settings-row:last-child { border-bottom: none; }
+.settings-row-action     { flex-wrap: wrap; }
+
+.settings-row-info { flex: 1; min-width: 0; }
+
+.settings-row-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.settings-row-val {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.settings-row-sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+/* Role badges */
+.role-badge {
+  font-size: 0.6rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.role-admin { background: var(--green-dim); color: var(--green); }
+.role-staff { background: var(--blue-dim);  color: var(--blue); }
+
+/* Add user form */
+.add-user-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 0;
+}
+
+.settings-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text);
+  font-family: var(--font-sans);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.settings-input:focus { border-color: var(--green-mid); }
+
+.settings-hint {
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding: 0.5rem 1.25rem 1rem;
+  font-family: var(--font-mono);
+}
+
+/* Forced password change banner */
+.forced-change-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--amber-dim);
+  color: var(--amber);
+  border: 1px solid rgba(227,179,65,0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.forced-change-banner svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Danger button */
+.btn-danger {
+  color: var(--red) !important;
+  border-color: rgba(248,81,73,0.3) !important;
+}
+.btn-danger:hover { background: var(--red-dim) !important; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .add-user-fields { grid-template-columns: 1fr; }
+}
+
+
+
+/* Change password page wrapper */
+.change-password-page {
+  max-width: 480px;
+  width: 100%;          /* ← key fix */
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.change-password-header {
+  margin-bottom: 1.5rem;
+}
+
+.change-password-card {
+  width: 100%;          /* ← key fix */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.change-password-card .auth-form {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.change-password-card .auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.change-password-card .auth-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.change-password-card .auth-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 0.9rem;
+  transition: border-color 0.15s;
+  width: 100%;          /* ← key fix */
+  box-sizing: border-box;
+}
+
+.change-password-card .auth-input-wrap:focus-within {
+  border-color: var(--green-mid);
+}
+
+.change-password-card .auth-input-wrap svg {
+  width: 15px;
+  height: 15px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.change-password-card .auth-input-wrap input {
+  flex: 1;
+  min-width: 0;         /* ← key fix, prevents input from overflowing flex */
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0.7rem 0;
+  font-size: 0.88rem;
+  color: var(--text);
+  font-family: var(--font-sans);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.change-password-card .auth-input-wrap input::placeholder {
+  color: var(--muted2);
+}
+
+.change-password-card .form-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.change-password-card .auth-btn {
+  flex: 1;
+  min-width: 0;         /* ← prevents overflow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--green-mid);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.change-password-card .auth-btn:hover { background: #268f3e; }
+.change-password-card .auth-btn svg   { width: 15px; height: 15px; }
+
+.change-password-card .btn-ghost {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Mobile — stack actions vertically */
+@media (max-width: 480px) {
+  .change-password-card .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .change-password-card .auth-btn {
+    width: 100%;
+  }
+
+  .change-password-card .btn-ghost {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 0.65rem;
+  }
+}

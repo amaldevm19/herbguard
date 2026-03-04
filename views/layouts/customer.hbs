@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{pageTitle}} — HerbGuard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="/css/main.css"/>
+  <link rel="stylesheet" href="/css/customer.css"/>
+
+  <!-- PWA -->
+  <!-- Use customer-specific manifest -->
+  <link rel="manifest" href="/manifest-customer.json"/>
+  <meta name="theme-color" content="#161b22" id="theme-color-meta"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="HerbGuard"/>
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png"/>
+</head>
+<body>
+<script>
+  (function() {
+    var t = localStorage.getItem('herbguard-theme');
+    if (t === 'light') document.body.classList.add('light-theme');
+  })();
+</script>
+
+<!-- Customer Header -->
+<header class="customer-header">
+  <div class="customer-header-inner">
+    <div class="customer-brand">
+      <i data-lucide="leaf"></i>
+      <span>HerbGuard</span>
+    </div>
+    <div class="customer-header-right">
+      <button class="pwa-install-btn" id="pwa-install-btn"
+        style="display:none" title="Install HerbGuard">
+        <i data-lucide="download"></i>
+        <span>Install App</span>
+      </button>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+        <i data-lucide="sun"  id="theme-icon-light"></i>
+        <i data-lucide="moon" id="theme-icon-dark"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Visited plants bar -->
+<div class="visited-bar" id="visited-bar" style="display:none">
+  <div class="visited-bar-inner">
+    <span class="visited-label">
+      <i data-lucide="history"></i>
+      Previously scanned
+    </span>
+    <div class="visited-list" id="visited-list"></div>
+  </div>
+</div>
+
+<main class="customer-main">
+  {{{body}}}
+</main>
+
+<footer class="customer-footer">
+  <div class="customer-footer-inner">
+    <span class="footer-logo">
+      <i data-lucide="leaf"></i> HerbGuard
+    </span>
+    <span style="font-size:0.72rem;color:var(--muted)">
+      Plant Intelligence System
+    </span>
+  </div>
+</footer>
+
+<script>lucide.createIcons();</script>
+<script src="/js/main.js"></script>
+<script src="/js/customer.js"></script>
+</body>
+</html>

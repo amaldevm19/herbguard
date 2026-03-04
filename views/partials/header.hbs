@@ -5,35 +5,81 @@
             <i data-lucide="leaf" class="logo-icon"></i>
             <span class="logo-text">HerbGuard</span>
         </a>
+        <!-- Hamburger — mobile only -->
+        <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+            <i data-lucide="menu" id="hamburger-icon"></i>
+        </button>
         <!-- Navigation -->
         <nav class="header-nav">
             <a href="/" class="nav-item {{#if isOverview}}active{{/if}}">
                 <i data-lucide="layout-dashboard"></i>
                 <span>Overview</span>
             </a>
+            <a href="/plants" class="nav-item {{#if isPlants}}active{{/if}}">
+                <i data-lucide="leaf"></i>
+                <span>Plants</span>
+            </a>
             <a href="#" class="nav-item">
                 <i data-lucide="chart-line"></i>
                 <span>Analytics</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="/settings" class="nav-item {{#if isSettings}}active{{/if}}">
                 <i data-lucide="settings"></i>
                 <span>Settings</span>
             </a>
         </nav>
         <!-- Right side -->
         <div class="header-right">
-        <div class="connection-status">
-            <span class="status-dot"></span>
-            <span class="status-text">Live</span>
-        </div>
+            <!-- PWA install button — hidden until browser fires beforeinstallprompt -->
+            <button class="pwa-install-btn" id="pwa-install-btn"
+                style="display:none" title="Install HerbGuard App">
+                <i data-lucide="download"></i>
+                <span>Install App</span>
+            </button>
+            <div class="connection-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Live</span>
+            </div>
+            {{#if user}}
+                <div class="header-user">
+                    <i data-lucide="user-circle"></i>
+                    <span>{{user.username}}</span>
+                    <a href="/logout" class="header-logout" title="Logout">
+                        <i data-lucide="log-out"></i>
+                    </a>
+                </div>
+            {{/if}}
+            <!-- Theme toggle -->
+            <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                <i data-lucide="sun" id="theme-icon-light"></i>
+                <i data-lucide="moon" id="theme-icon-dark"></i>
+            </button>
 
-        <!-- Theme toggle -->
-        <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
-            <i data-lucide="sun" id="theme-icon-light"></i>
-            <i data-lucide="moon" id="theme-icon-dark"></i>
-        </button>
-
-        <div class="header-clock" id="header-clock">--:--:--</div>
+            <div class="header-clock" id="header-clock">--:--:--</div>
         </div>
     </div>
 </header>
+<!-- Mobile nav drawer -->
+<div class="mobile-nav" id="mobile-nav">
+  <a href="/" class="mobile-nav-item {{#if isOverview}}active{{/if}}">
+    <i data-lucide="layout-dashboard"></i>
+    <span>Overview</span>
+  </a>
+  <a href="/plants" class="mobile-nav-item {{#if isPlants}}active{{/if}}">
+    <i data-lucide="leaf"></i>
+    <span>Plants</span>
+  </a>
+  <a href="#" class="mobile-nav-item">
+    <i data-lucide="chart-line"></i>
+    <span>Analytics</span>
+  </a>
+  <a href="/settings" class="mobile-nav-item {{#if isSettings}}active{{/if}}">
+    <i data-lucide="settings"></i>
+    <span>Settings</span>
+  </a>
+  <div class="mobile-nav-divider"></div>
+  <a href="/logout" class="mobile-nav-item mobile-nav-logout">
+    <i data-lucide="log-out"></i>
+    <span>Logout</span>
+  </a>
+</div>
