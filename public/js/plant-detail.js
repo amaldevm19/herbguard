@@ -18,6 +18,8 @@ const tooltipStyle = {
   cornerRadius:    8
 };
 
+let lastHistoryTime = HISTORY.length > 0 ? HISTORY[0].time : null;
+
 // Show every 4th label to avoid crowding on x-axis
 const labels = HISTORY.map(r => r.timeLabel);
 const sparseLabels = labels.map((l, i) => i % 4 === 0 ? l : '');
@@ -189,15 +191,23 @@ new Chart(
 // ── History Table ─────────────────────────────────────────────
 function buildTable() {
   const tbody = document.getElementById('history-tbody');
-  // Show latest 20 readings, newest first
-  const rows = [...HISTORY].reverse().slice(0, 20);
+  // Already newest first from InfluxDB (desc: true)
+  const rows = HISTORY.slice(0, 20);
 
-  tbody.innerHTML = rows.map(row => `
-    <tr>
-      <td class="mono muted">${row.timeLabel}</td>
+  tbody.innerHTML = rows.map(row => {
+    const d = new Date(row._time);
+    const timeLabel = d.toLocaleString('en-US', {
+        month:  'short',
+        day:    '2-digit',
+        hour:   '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+    return `<tr>
+      <td class="mono muted">${timeLabel}</td>
       <td class="mono" style="color:#58a6ff">${row.moisture.toFixed(0)}%</td>
-      <td class="mono" style="color:#e3b341">${row.airTemp.toFixed(1)}°C</td>
-      <td class="mono" style="color:#f0883e">${row.soilTemp.toFixed(1)}°C</td>
+      <td class="mono" style="color:#e3b341">${row.air_temp.toFixed(1)}°C</td>
+      <td class="mono" style="color:#f0883e">${row.soil_temp.toFixed(1)}°C</td>
       <td class="mono" style="color:#39d353">${row.humidity.toFixed(0)}%</td>
       <td class="mono" style="color:#bc8cff">${row.ph.toFixed(1)}</td>
       <td class="mono muted">${row.light.toLocaleString()}</td>
@@ -207,8 +217,8 @@ function buildTable() {
           : '<span class="muted">—</span>'
         }
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 buildTable();
@@ -288,5 +298,26 @@ async function pollDetail() {
   }
 }
 
+async function pollHistory() {
+  try {
+    const res  = await fetch(`/api/plant/${PLANT.potId}/history`);
+    const data = await res.json();
+
+    if (!data.length) return;
+
+    // Only update if there are new entries
+    if (data[0].time !== lastHistoryTime) {
+      lastHistoryTime = data[0].time;
+      renderHistoryTable(data);
+      console.log('[HerbGuard] New history entry detected');
+    }
+  } catch (err) {
+    console.warn('History poll failed:', err);
+  }
+}
+
+
+
 // Start countdown — fires pollDetail every 30s
 window.HerbGuard.startCountdown(pollDetail);
+window.HerbGuard.startCountdown(pollHistory);

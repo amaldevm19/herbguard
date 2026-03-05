@@ -92,8 +92,8 @@ function updateCard(plant) {
   // Alert chips
   const alertsEl = card.querySelector('.card-alerts');
   if (alertsEl) {
-    if (plant.healthIssues && plant.healthIssues.length > 0) {
-      alertsEl.innerHTML = plant.healthIssues
+    if (plant.issues && plant.issues.length > 0) {
+      alertsEl.innerHTML = plant.issues
         .map(i => `<span class="alert-chip">${i}</span>`)
         .join('');
       alertsEl.style.display = 'flex';
@@ -245,13 +245,13 @@ function openModal(potId) {
   document.getElementById('mg-ph-range').textContent           = `Optimal: pH ${plant.optimalPh[0]}–${plant.optimalPh[1]}`;
 
   // Pump info
-  document.getElementById('modal-last-pump').textContent  = plant.lastPump;
-  document.getElementById('modal-next-water').textContent = plant.nextWater;
+  document.getElementById('modal-last-pump').textContent  = plant.lastPump  || '—';
+  document.getElementById('modal-next-water').textContent = plant.nextWater || '—';
 
   // Alerts
   const alertsEl = document.getElementById('modal-alerts');
-  if (plant.healthIssues && plant.healthIssues.length > 0) {
-    alertsEl.innerHTML     = plant.healthIssues.map(i => `<span class="alert-chip">${i}</span>`).join('');
+  if (plant.issues && plant.issues.length > 0) {
+    alertsEl.innerHTML     = plant.issues.map(i => `<span class="alert-chip">${i}</span>`).join('');
     alertsEl.style.display = 'flex';
   } else {
     alertsEl.innerHTML     = '';

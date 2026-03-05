@@ -157,9 +157,7 @@ function calcHealth(plant, readings) {
 
   return {
     status:      hasCritical ? 'bad' : issues.length > 0 ? 'warn' : 'good',
-    healthScore: hasCritical ? 40 + Math.floor(Math.random() * 15)
-                             : issues.length > 0 ? 65 + Math.floor(Math.random() * 15)
-                             : 88 + Math.floor(Math.random() * 12),
+    healthScore: hasCritical ? 40 + Math.floor(Math.random() * 15): issues.length > 0 ? 65 + Math.floor(Math.random() * 15): 88 + Math.floor(Math.random() * 12),
     issues
   };
 }

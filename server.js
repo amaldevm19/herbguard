@@ -15,6 +15,8 @@ const settingsRoutes = require('./routes/settings');
 const plantsRoutes   = require('./routes/plants');
 const customerRoutes = require('./routes/customer');
 
+const influx = require('./db/influx');
+
 
 
 
@@ -111,65 +113,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 // ── Manifest routes — dynamic so ngrok header always applies ──
-/*
-app.get('/manifest.json', (req, res) => {
-  console.log('✅ manifest.json requested');
-  res.setHeader('Content-Type', 'application/manifest+json');
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  if(req.query.entry === 'customer') {
-        return res.json({
-            name: 'HerbGuard Plant Monitor',
-            short_name: 'HerbGuard',
-            description: 'Smart plant monitoring dashboard',
-            start_url: '/p/last',
-            display: 'standalone',
-            orientation: 'any',
-            theme_color: '#161b22',
-            background_color: '#0d1117',
-            scope: '/',
-            icons: [
-            { src: '/icons/icon-72x72.png',  sizes: '72x72',  type: 'image/png', purpose: 'maskable any' },
-            { src: '/icons/icon-96x96.png',  sizes: '96x96',  type: 'image/png', purpose: 'maskable any' },
-            { src: '/icons/icon-192x192.png',sizes: '192x192',type: 'image/png', purpose: 'maskable any' },
-            { src: '/icons/icon-512x512.png',sizes: '512x512',type: 'image/png', purpose: 'maskable any' }
-            ],
-            shortcuts: [
-            { name: 'Dashboard', url: '/',       icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] },
-            { name: 'Plants',    url: '/plants', icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] }
-            ],
-            categories: ['productivity', 'utilities'],
-            lang: 'en'
-        });
-    } 
-
-    res.json({
-            name: 'HerbGuard Plant Monitor',
-            short_name: 'HerbGuard',
-            description: 'Smart plant monitoring dashboard',
-            start_url: '/',
-            display: 'standalone',
-            orientation: 'any',
-            theme_color: '#161b22',
-            background_color: '#0d1117',
-            scope: '/',
-            icons: [
-            { src: '/icons/icon-72x72.png',  sizes: '72x72',  type: 'image/png', purpose: 'maskable any' },
-            { src: '/icons/icon-96x96.png',  sizes: '96x96',  type: 'image/png', purpose: 'maskable any' },
-            { src: '/icons/icon-192x192.png',sizes: '192x192',type: 'image/png', purpose: 'maskable any' },
-            { src: '/icons/icon-512x512.png',sizes: '512x512',type: 'image/png', purpose: 'maskable any' }
-            ],
-            shortcuts: [
-            { name: 'Dashboard', url: '/',       icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] },
-            { name: 'Plants',    url: '/plants', icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }] }
-            ],
-            categories: ['productivity', 'utilities'],
-            lang: 'en'
-        });
-
-});
-*/
 
 app.get('/manifest.json', (req, res) => {
   res.setHeader('Content-Type', 'application/manifest+json');
@@ -270,73 +213,333 @@ app.use('/p',      customerRoutes);
 // ── Protected routes ──────────────────────
 // Dashboard overview
 
-app.get('/', requireAuth, requirePasswordChange, (req, res) => {
-    const plants       = generatePlants();
-    const totalPots    = plants.length;
-    const healthyCount = plants.filter(p => p.health === 'good').length;
-    const alertCount   = plants.filter(p => p.health !== 'good').length;
-    const needsWater   = plants.filter(p => p.moisture < 30).length;
-    const avgTemp      = (plants.reduce((s, p) => s + p.airTemp, 0) / plants.length).toFixed(1);
-    res.render('dashboard', {
-        pageTitle:   'Dashboard',
-        pageCSS:     'dashboard.css',
-        pageJS:      'dashboard.js',
-        isOverview:  true,
-        plants,
-        totalPots,
-        healthyCount,
-        alertCount,
-        needsWater,
-        avgTemp,
-        plantsJSON:  JSON.stringify(plants)
-    });
+app.get('/', requireAuth, requirePasswordChange, async (req, res) => {
+    try {
+        // Get plant metadata from SQLite
+        const sqlitePlants = db.getAllPlants();
+
+        // Get latest sensor readings from InfluxDB
+        const readings = await influx.getAllLatestReadings();
+
+        // Merge InfluxDB readings into plant metadata
+        const mergedPlants = sqlitePlants.map(plant => {
+
+            // Safe parse of uses JSON
+            let uses = [];
+            try { uses = JSON.parse(plant.uses || '[]'); } catch { uses = []; }
+
+            const merged = {
+                potId:           plant.pot_id,
+                plantName:       plant.plant_name,
+                emoji:           plant.emoji       || '🌿',
+                species:         plant.species     || '',
+                family:          plant.family      || '',
+                location:        plant.location    || '',
+                description:     plant.description || '',
+                uses,
+                optimalMoisture: [
+                    plant.optimal_moisture_min ?? 30,
+                    plant.optimal_moisture_max ?? 60
+                ],
+                optimalTemp: [
+                    plant.optimal_temp_min ?? 18,
+                    plant.optimal_temp_max ?? 28
+                ],
+                optimalPh: [
+                    plant.optimal_ph_min ?? 6.0,
+                    plant.optimal_ph_max ?? 7.0
+                ],
+                // Default to 0 — no reading yet
+                moisture:  0,
+                airTemp:   0,
+                soilTemp:  0,
+                humidity:  0,
+                ph:        0,
+                light:     0,
+                lastPump:  null,
+                nextWater: null,
+            };
+
+            // Only overlay if reading exists
+            const reading = readings.find(r => r.pot_id === plant.pot_id);
+            if (reading) {
+                merged.moisture  = reading.moisture  ?? 0;
+                merged.airTemp   = reading.air_temp  ?? 0;
+                merged.soilTemp  = reading.soil_temp ?? 0;
+                merged.humidity  = reading.humidity  ?? 0;
+                merged.ph        = reading.ph        ?? 0;
+                merged.light     = reading.light     ?? 0;
+            }
+
+            // Only calc health if we have real readings
+            if (reading) {
+                const { status, healthScore, issues } = calcHealth(merged);
+                merged.health      = status;
+                merged.healthScore = healthScore;
+                merged.issues      = issues;
+            } else {
+                // No sensor data yet — show neutral state
+                merged.health      = 'good';
+                merged.healthScore = 0;
+                merged.issues      = [];
+                merged.noData      = true; // flag for template
+            }
+
+            return merged;
+        });
+
+        const totalPots    = mergedPlants.length;
+        const healthyCount = mergedPlants.filter(p => p.health === 'good').length;
+        const alertCount   = mergedPlants.filter(p => p.health !== 'good').length;
+        const needsWater   = mergedPlants.filter(p => p.moisture < 30).length;
+        const avgTemp      = (mergedPlants.reduce((s, p) => s + p.airTemp, 0) / mergedPlants.length).toFixed(1);
+
+        res.render('dashboard', {
+            pageTitle:   'Dashboard',
+            pageCSS:     'dashboard.css',
+            pageJS:      'dashboard.js',
+            isOverview:  true,
+            plants:      mergedPlants,
+            totalPots,
+            healthyCount,
+            alertCount,
+            needsWater,
+            avgTemp,
+            plantsJSON:  JSON.stringify(mergedPlants)
+        });
+
+    } catch (err) {
+        console.error('Dashboard error:', err);
+        res.render('dashboard', {
+            pageTitle:    'Dashboard',
+            pageCSS:      'dashboard.css',
+            pageJS:       'dashboard.js',
+            isOverview:   true,
+            plants:       [],
+            totalPots:    0,
+            healthyCount: 0,
+            alertCount:   0,
+            needsWater:   0,
+            avgTemp:      '0.0',
+            plantsJSON:   '[]',
+            error:        'Unable to load plant data due to server error. Please try again.'
+        });
+    }
 });
 
+
 // Plant detail page
-app.get('/plant/:potId', requireAuth, requirePasswordChange, (req, res) => {
-    const plants = generatePlants();
-    const plant  = plants.find(p => p.potId === req.params.potId);
-    if (!plant) return res.redirect('/');
-    const history = generateHistory(
-        { base: {
-            moisture: plant.moisture,
-            airTemp:  plant.airTemp,
-            soilTemp: plant.soilTemp,
-            humidity: plant.humidity,
-            ph:       plant.ph,
-            light:    plant.light
-        }},
-        48
-    );
-    const gauges = [
-        { key:'moisture', label:'Soil Moisture', value:plant.moisture, unit:'%',   max:100,  icon:'droplets',      optimal:plant.optimalMoisture },
-        { key:'humidity', label:'Air Humidity',  value:plant.humidity, unit:'%',   max:100,  icon:'wind',          optimal:[40,70] },
-        { key:'airTemp',  label:'Air Temp',      value:plant.airTemp,  unit:'°C',  max:50,   icon:'thermometer',   optimal:plant.optimalTemp },
-        { key:'soilTemp', label:'Soil Temp',     value:plant.soilTemp, unit:'°C',  max:50,   icon:'thermometer',   optimal:[15,25] },
-        { key:'ph',       label:'pH Level',      value:plant.ph,       unit:'pH',  max:14,   icon:'flask-conical', optimal:plant.optimalPh },
-        { key:'light',    label:'Light',         value:plant.light,    unit:'lux', max:8000, icon:'sun',           optimal:[3000,7000] }
-    ];
-    res.render('plant-detail', {
-        pageTitle:   plant.plantName,
-        pageCSS:     'plant-detail.css',
-        pageJS:      'plant-detail.js',
-        plant,
-        gauges,
-        historyJSON: JSON.stringify(history),
-        plantJSON:   JSON.stringify(plant)
-    })
+app.get('/plant/:potId', requireAuth, requirePasswordChange, async (req, res) => {
+    try {
+        // Get plant metadata from SQLite
+        const sqlitePlant = db.getPlantByPotId(req.params.potId);
+        if (!sqlitePlant) return res.redirect('/');
+
+        // Build normalised plant object from SQLite columns
+        let uses = [];
+        try { uses = JSON.parse(sqlitePlant.uses || '[]'); } catch { uses = []; }
+
+        const plant = {
+            potId:           sqlitePlant.pot_id,
+            plantName:       sqlitePlant.plant_name,
+            emoji:           sqlitePlant.emoji        || '🌿',
+            species:         sqlitePlant.species      || '',
+            family:          sqlitePlant.family       || '',
+            location:        sqlitePlant.location     || '',
+            description:     sqlitePlant.description  || '',
+            uses,
+            optimalMoisture: [sqlitePlant.optimal_moisture_min ?? 30, sqlitePlant.optimal_moisture_max ?? 60],
+            optimalTemp:     [sqlitePlant.optimal_temp_min     ?? 18, sqlitePlant.optimal_temp_max     ?? 28],
+            optimalPh:       [sqlitePlant.optimal_ph_min       ?? 6.0, sqlitePlant.optimal_ph_max      ?? 7.0],
+            // Sensor defaults
+            moisture:  0,
+            airTemp:   0,
+            soilTemp:  0,
+            humidity:  0,
+            ph:        0,
+            light:     0,
+            lastPump:  null,
+            nextWater: null,
+            noData:    true
+        };
+
+        // Overlay latest InfluxDB reading
+        const reading = await influx.getLatestReading(req.params.potId);
+        if (reading) {
+            plant.moisture  = reading.moisture  ?? 0;
+            plant.airTemp   = reading.air_temp  ?? 0;
+            plant.soilTemp  = reading.soil_temp ?? 0;
+            plant.humidity  = reading.humidity  ?? 0;
+            plant.ph        = reading.ph        ?? 0;
+            plant.light     = reading.light     ?? 0;
+            plant.noData    = false;
+        }
+
+        // Recalculate health with real values
+        const { status, healthScore, issues } = calcHealth(plant);
+        plant.health      = status;
+        plant.healthScore = healthScore;
+        plant.issues      = issues;
+
+        // Get raw history from InfluxDB — no remapping, keep original keys
+        const history = await influx.getSensorHistory(req.params.potId, 48);
+
+        const gauges = [
+            { key:'moisture', label:'Soil Moisture', value:plant.moisture, unit:'%',   max:100,  icon:'droplets',      optimal:plant.optimalMoisture },
+            { key:'humidity', label:'Air Humidity',  value:plant.humidity, unit:'%',   max:100,  icon:'wind',          optimal:[40,70]               },
+            { key:'airTemp',  label:'Air Temp',      value:plant.airTemp,  unit:'°C',  max:50,   icon:'thermometer',   optimal:plant.optimalTemp      },
+            { key:'soilTemp', label:'Soil Temp',     value:plant.soilTemp, unit:'°C',  max:50,   icon:'thermometer',   optimal:[15,25]                },
+            { key:'ph',       label:'pH Level',      value:plant.ph,       unit:'pH',  max:14,   icon:'flask-conical', optimal:plant.optimalPh        },
+            { key:'light',    label:'Light',         value:plant.light,    unit:'lux', max:8000, icon:'sun',           optimal:[3000,7000]            }
+        ];
+
+        res.render('plant-detail', {
+            pageTitle:   plant.plantName,
+            pageCSS:     'plant-detail.css',
+            pageJS:      'plant-detail.js',
+            plant,
+            gauges,
+            historyJSON: JSON.stringify(history),
+            plantJSON:   JSON.stringify(plant)
+        });
+
+    } catch (err) {
+        console.error('Plant detail error:', err);
+        res.status(500).render('error', {
+            pageTitle: 'Something went wrong',
+            layout:    'minimal',
+            message:   'Unable to load plant data. Please try again.',
+            backUrl:   '/'
+        });
+    }
 });
 
 // ── API routes (protected) ────────────────
-app.get('/api/plants', requireAuth, (req, res) => {
-  res.json(generatePlants());
+app.get('/api/plants', requireAuth, async (req, res) => {
+  try {
+    const sqlitePlants = db.getAllPlants();
+    const readings     = await influx.getAllLatestReadings();
+
+    const merged = sqlitePlants.map(plant => {
+      let uses = [];
+      try { uses = JSON.parse(plant.uses || '[]'); } catch { uses = []; }
+
+      const merged = {
+        potId:           plant.pot_id,
+        plantName:       plant.plant_name,
+        emoji:           plant.emoji       || '🌿',
+        species:         plant.species     || '',
+        family:          plant.family      || '',
+        location:        plant.location    || '',
+        description:     plant.description || '',
+        uses,
+        optimalMoisture: [plant.optimal_moisture_min ?? 30, plant.optimal_moisture_max ?? 60],
+        optimalTemp:     [plant.optimal_temp_min     ?? 18, plant.optimal_temp_max     ?? 28],
+        optimalPh:       [plant.optimal_ph_min       ?? 6.0, plant.optimal_ph_max      ?? 7.0],
+        moisture:  0,
+        airTemp:   0,
+        soilTemp:  0,
+        humidity:  0,
+        ph:        0,
+        light:     0,
+        lastPump:  null,
+        nextWater: null,
+        noData:    true
+      };
+
+      const reading = readings.find(r => r.pot_id === plant.pot_id);
+      if (reading) {
+        merged.moisture  = reading.moisture  ?? 0;
+        merged.airTemp   = reading.air_temp  ?? 0;
+        merged.soilTemp  = reading.soil_temp ?? 0;
+        merged.humidity  = reading.humidity  ?? 0;
+        merged.ph        = reading.ph        ?? 0;
+        merged.light     = reading.light     ?? 0;
+        merged.noData    = false;
+      }
+
+      const { status, healthScore, issues } = calcHealth(merged);
+      merged.health      = status;
+      merged.healthScore = healthScore;
+      merged.issues      = issues;
+
+      return merged;
+    });
+
+    res.json(merged);
+
+  } catch (err) {
+    console.error('/api/plants error:', err);
+    res.status(500).json({ error: 'Unable to fetch plant data' });
+  }
 });
 
-app.get('/api/plant/:potId/latest', requireAuth, (req, res) => {
-  const plants = generatePlants();
-  const plant  = plants.find(p => p.potId === req.params.potId);
-  if (!plant) return res.status(404).json({ error: 'Not found' });
-  res.json(plant);
+// Get single plant latest reading
+app.get('/api/plant/:potId/latest', requireAuth, async (req, res) => {
+  try {
+    const sqlitePlant = db.getPlantByPotId(req.params.potId);
+    if (!sqlitePlant) return res.status(404).json({ error: 'Plant not found' });
+
+    let uses = [];
+    try { uses = JSON.parse(sqlitePlant.uses || '[]'); } catch { uses = []; }
+
+    const plant = {
+      potId:           sqlitePlant.pot_id,
+      plantName:       sqlitePlant.plant_name,
+      emoji:           sqlitePlant.emoji       || '🌿',
+      species:         sqlitePlant.species     || '',
+      family:          sqlitePlant.family      || '',
+      location:        sqlitePlant.location    || '',
+      description:     sqlitePlant.description || '',
+      uses,
+      optimalMoisture: [sqlitePlant.optimal_moisture_min ?? 30, sqlitePlant.optimal_moisture_max ?? 60],
+      optimalTemp:     [sqlitePlant.optimal_temp_min     ?? 18, sqlitePlant.optimal_temp_max     ?? 28],
+      optimalPh:       [sqlitePlant.optimal_ph_min       ?? 6.0, sqlitePlant.optimal_ph_max      ?? 7.0],
+      moisture:  0,
+      airTemp:   0,
+      soilTemp:  0,
+      humidity:  0,
+      ph:        0,
+      light:     0,
+      lastPump:  null,
+      nextWater: null,
+      noData:    true
+    };
+
+    const reading = await influx.getLatestReading(req.params.potId);
+    if (reading) {
+      plant.moisture  = reading.moisture  ?? 0;
+      plant.airTemp   = reading.air_temp  ?? 0;
+      plant.soilTemp  = reading.soil_temp ?? 0;
+      plant.humidity  = reading.humidity  ?? 0;
+      plant.ph        = reading.ph        ?? 0;
+      plant.light     = reading.light     ?? 0;
+      plant.noData    = false;
+    }
+
+    const { status, healthScore, issues } = calcHealth(plant);
+    plant.health      = status;
+    plant.healthScore = healthScore;
+    plant.issues      = issues;
+
+    res.json(plant);
+
+  } catch (err) {
+    console.error('/api/plant/:potId/latest error:', err);
+    res.status(500).json({ error: 'Unable to fetch plant data' });
+  }
+});
+
+// Get sensor history for charts
+app.get('/api/plant/:potId/history', requireAuth, async (req, res) => {
+  try {
+    const hours   = parseInt(req.query.hours) || 24;
+    const history = await influx.getSensorHistory(req.params.potId, hours);
+    res.json(history);
+  } catch (err) {
+    console.error('InfluxDB error:', err);
+    res.json([]);
+  }
 });
 
 // Offline fallback page
@@ -351,3 +554,40 @@ app.get('/offline', (req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🌿 HerbGuard running at http://localhost:${PORT}\n`);
 });
+
+
+// Work out health status based on whether readings are in optimal range
+function calcHealth(plant) {
+  const issues = [];
+
+  const [minM, maxM] = plant.optimalMoisture;
+  const [minP, maxP] = plant.optimalPh;
+  const [minT, maxT] = plant.optimalTemp;
+
+  // Critical = more than 10 units outside range
+  // Warning  = outside range but within 10 units
+  // The jitter is now so small (±1.5 max) that a base value
+  // inside the range will NEVER randomly cross into warning
+  if      (plant.moisture < minM - 10) issues.push('Moisture critical');
+  else if (plant.moisture < minM - 2)  issues.push('Moisture low');
+  else if (plant.moisture > maxM + 10) issues.push('Moisture critical');
+  else if (plant.moisture > maxM + 2)  issues.push('Moisture high');
+
+  if      (plant.airTemp < minT - 5)   issues.push('Temperature critical');
+  else if (plant.airTemp < minT - 1)   issues.push('Temperature low');
+  else if (plant.airTemp > maxT + 5)   issues.push('Temperature critical');
+  else if (plant.airTemp > maxT + 1)   issues.push('Temperature high');
+
+  if      (plant.ph < minP - 1)        issues.push('pH critical');
+  else if (plant.ph < minP - 0.3)      issues.push('pH low');
+  else if (plant.ph > maxP + 1)        issues.push('pH critical');
+  else if (plant.ph > maxP + 0.3)      issues.push('pH high');
+
+  const hasCritical = issues.some(i => i.includes('critical'));
+
+  return {
+    status:      hasCritical ? 'bad' : issues.length > 0 ? 'warn' : 'good',
+    healthScore: hasCritical ? 40 + Math.floor(Math.random() * 15): issues.length > 0 ? 65 + Math.floor(Math.random() * 15): 88 + Math.floor(Math.random() * 12),
+    issues
+  };
+}

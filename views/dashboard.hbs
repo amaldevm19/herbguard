@@ -68,8 +68,16 @@
     </div>
 </div>
 
+
+
 <!-- ── Plant Cards Grid ───────────────── -->
 <div class="plant-grid">
+    {{#if error}}
+    <div class="dashboard-error">
+        <i data-lucide="alert-triangle"></i>
+        {{error}}
+    </div>
+    {{/if}}
     {{#each plants}}
         <div class="plant-card {{healthClass health}}" data-pot="{{potId}}">
             <!-- Banner -->
@@ -100,44 +108,48 @@
                         {{healthScore}}<span class="health-score-unit">%</span>
                     </div>
                 </div>
+
                 <!-- Three key metrics -->
                 <div class="mini-metrics">
-                <div class="mini-metric">
-                    <div class="mm-icon"><i data-lucide="droplets"></i></div>
-                    <div class="mm-val" data-metric="moisture"
-                    style="color:{{moistureColor moisture optimalMoisture}}">
-                    {{toFixed moisture 0}}%
+                    {{#if noData}}
+                        <div class="no-sensor-badge">No sensor data yet</div>
+                    {{/if}}
+                    <div class="mini-metric">
+                        <div class="mm-icon"><i data-lucide="droplets"></i></div>
+                        <div class="mm-val" data-metric="moisture"
+                        style="color:{{moistureColor moisture optimalMoisture}}">
+                        {{toFixed moisture 0}}%
+                        </div>
+                        <div class="mm-label">Moisture</div>
+                        <div class="mm-bar">
+                        <div class="mm-fill mm-blue" data-metric="moisture"
+                            style="width:{{toPercent moisture 100}}%"></div>
+                        </div>
                     </div>
-                    <div class="mm-label">Moisture</div>
-                    <div class="mm-bar">
-                    <div class="mm-fill mm-blue" data-metric="moisture"
-                        style="width:{{toPercent moisture 100}}%"></div>
+                    <div class="mini-metric">
+                        <div class="mm-icon"><i data-lucide="thermometer"></i></div>
+                        <div class="mm-val" data-metric="airTemp"
+                        style="color:{{tempColor airTemp optimalTemp}}">
+                        {{toFixed airTemp 1}}°
+                        </div>
+                        <div class="mm-label">Air Temp</div>
+                        <div class="mm-bar">
+                        <div class="mm-fill mm-amber" data-metric="airTemp"
+                            style="width:{{toPercent airTemp 50}}%"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="mini-metric">
-                    <div class="mm-icon"><i data-lucide="thermometer"></i></div>
-                    <div class="mm-val" data-metric="airTemp"
-                    style="color:{{tempColor airTemp optimalTemp}}">
-                    {{toFixed airTemp 1}}°
+                    <div class="mini-metric">
+                        <div class="mm-icon"><i data-lucide="wind"></i></div>
+                        <div class="mm-val" data-metric="humidity"
+                        style="color:{{humidityColor humidity}}">
+                        {{toFixed humidity 0}}%
+                        </div>
+                        <div class="mm-label">Humidity</div>
+                        <div class="mm-bar">
+                        <div class="mm-fill mm-green" data-metric="humidity"
+                            style="width:{{toPercent humidity 100}}%"></div>
+                        </div>
                     </div>
-                    <div class="mm-label">Air Temp</div>
-                    <div class="mm-bar">
-                    <div class="mm-fill mm-amber" data-metric="airTemp"
-                        style="width:{{toPercent airTemp 50}}%"></div>
-                    </div>
-                </div>
-                <div class="mini-metric">
-                    <div class="mm-icon"><i data-lucide="wind"></i></div>
-                    <div class="mm-val" data-metric="humidity"
-                    style="color:{{humidityColor humidity}}">
-                    {{toFixed humidity 0}}%
-                    </div>
-                    <div class="mm-label">Humidity</div>
-                    <div class="mm-bar">
-                    <div class="mm-fill mm-green" data-metric="humidity"
-                        style="width:{{toPercent humidity 100}}%"></div>
-                    </div>
-                </div>
                 </div>
 
                 <!-- Extra metrics -->
@@ -189,9 +201,9 @@
                     </div>
                 </div>
                 <!-- Alert chips (only shown if issues exist) -->
-                {{#if this.healthIssues.length}}
+                {{#if issues.length}}
                     <div class="card-alerts">
-                        {{#each this.healthIssues}}
+                        {{#each issues}}
                         <span class="alert-chip">{{this}}</span>
                         {{/each}}
                     </div>
