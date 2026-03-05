@@ -181,7 +181,7 @@ new Chart(
         x: { grid: { color: '#1c2333' }, ticks: { maxRotation: 0 } },
         y: {
           grid: { color: '#1c2333' },
-          ticks: { callback: v => (v / 1000).toFixed(1) + 'k' }
+          ticks: { callback: v => (v / 1000).toFixed(0) + 'k' }
         }
       }
     }
@@ -206,8 +206,8 @@ function buildTable() {
     return `<tr>
       <td class="mono muted">${timeLabel}</td>
       <td class="mono" style="color:#58a6ff">${row.moisture.toFixed(0)}%</td>
-      <td class="mono" style="color:#e3b341">${row.air_temp.toFixed(1)}°C</td>
-      <td class="mono" style="color:#f0883e">${row.soil_temp.toFixed(1)}°C</td>
+      <td class="mono" style="color:#e3b341">${row.air_temp.toFixed(0)}°C</td>
+      <td class="mono" style="color:#f0883e">${row.soil_temp.toFixed(0)}°C</td>
       <td class="mono" style="color:#39d353">${row.humidity.toFixed(0)}%</td>
       <td class="mono" style="color:#bc8cff">${row.ph.toFixed(1)}</td>
       <td class="mono muted">${row.light.toLocaleString()}</td>
