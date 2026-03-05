@@ -34,7 +34,7 @@ function writeSensorReading(potId, data) {
 async function getLatestReading(potId) {
   const query = `
     from(bucket: "${bucket}")
-      |> range(start: -1h)
+      |> range(start: -2h)
       |> filter(fn: (r) => r._measurement == "sensor_reading")
       |> filter(fn: (r) => r.pot_id == "${potId}")
       |> last()
@@ -84,10 +84,12 @@ async function getSensorHistory(potId, hours = 48) {
 async function getAllLatestReadings() {
   const query = `
     from(bucket: "${bucket}")
-      |> range(start: -1h)
+      |> range(start: -2h)
       |> filter(fn: (r) => r._measurement == "sensor_reading")
+      |> group(columns: ["pot_id", "_field"])
       |> last()
-      |> pivot(rowKey:["_time", "pot_id"], columnKey: ["_field"], valueColumn: "_value")
+      |> group(columns: ["pot_id"])
+      |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
   `;
 
   const rows = [];
@@ -100,7 +102,6 @@ async function getAllLatestReadings() {
       complete: resolve
     });
   });
-
 
   return rows;
 }

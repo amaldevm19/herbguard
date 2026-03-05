@@ -11,7 +11,7 @@ const { writeSensorReading } = require('../db/influx');
 const POTS = ['POT-001', 'POT-002', 'POT-003', 'POT-004'];
 
 const BASE = {
-  'POT-001': { moisture: 20, airTemp: 22, soilTemp: 20, humidity: 55, ph: 6.5, light: 4500 },
+  'POT-001': { moisture: 40, airTemp: 22, soilTemp: 20, humidity: 55, ph: 6.5, light: 4500 },
   'POT-002': { moisture: 60, airTemp: 23, soilTemp: 21, humidity: 58, ph: 6.8, light: 3800 },
   'POT-003': { moisture: 30, airTemp: 21, soilTemp: 19, humidity: 50, ph: 7.1, light: 5200 },
   'POT-004': { moisture: 55, airTemp: 24, soilTemp: 22, humidity: 62, ph: 6.2, light: 4100 }
