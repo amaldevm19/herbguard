@@ -61,7 +61,15 @@
         <div class="plant-card {{healthClass health}}" data-pot="{{potId}}">
             <!-- Banner -->
             <div class="card-banner">
+                {{#if primaryImage}}
+                <img 
+                    class="card-banner-img"
+                    src="/uploads/plants/{{potId}}/{{primaryImage.filename}}"
+                    alt="{{plantName}}"
+                />
+                {{else}}
                 <span class="card-emoji">{{emoji}}</span>
+                {{/if}}
                 <span class="card-pot-id">{{potId}}</span>
                 <div class="card-health-badge {{healthClass health}}">
                     <i data-lucide="{{healthIcon health}}"></i>
@@ -168,7 +176,7 @@
                         <i data-lucide="waves"></i>
                         Last pump
                         </span>
-                        <span class="water-val">{{lastPump}}</span>
+                        <span class="water-val">{{lastPump}}{{#unless lastPump}}—{{/unless}}</span>
                     </div>
                     <div class="water-divider"></div>
                     <div class="water-item">

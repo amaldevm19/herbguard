@@ -513,3 +513,11 @@
 @media (max-width: 480px) {
   .gauge-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.detail-hero-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+}

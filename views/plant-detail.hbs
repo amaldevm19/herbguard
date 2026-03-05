@@ -11,7 +11,17 @@
 <!-- ── Hero Header ─────────────────────── -->
 <div class="detail-hero">
   <div class="detail-hero-left">
-    <div class="detail-hero-icon">{{plant.emoji}}</div>
+    <div class="detail-hero-icon">
+      {{#if plant.primaryImage}}
+      <img 
+          class="detail-hero-img"
+          src="/uploads/plants/{{plant.potId}}/{{plant.primaryImage.filename}}"
+          alt="{{plant.plantName}}"
+      />
+      {{else}}
+      {{plant.emoji}}
+      {{/if}}
+    </div>
     <div class="detail-hero-info">
       <h1 class="detail-hero-name">{{plant.plantName}}</h1>
       <div class="detail-hero-species">

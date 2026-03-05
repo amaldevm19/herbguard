@@ -230,9 +230,11 @@ app.get('/', requireAuth, requirePasswordChange, async (req, res) => {
         // Get latest sensor readings from InfluxDB
         const readings = await influx.getAllLatestReadings();
 
+        
+
         // Merge InfluxDB readings into plant metadata
         const mergedPlants = await Promise.all (sqlitePlants.map(async plant => {
-
+            const images = db.getPlantImages(plant.pot_id);
             // Safe parse of uses JSON
             let uses = [];
             try { uses = JSON.parse(plant.uses || '[]'); } catch { uses = []; }
@@ -287,6 +289,7 @@ app.get('/', requireAuth, requirePasswordChange, async (req, res) => {
                 merged.healthScore = healthScore;
                 merged.issues      = issues;
                 merged.lastUpdated = await influx.getLastChangeTime(merged.potId);
+                merged.primaryImage = images.find(i => i.is_primary) || images[0] || null;
             } else {
                 // No sensor data yet — show neutral state
                 merged.health      = 'good';
@@ -345,6 +348,8 @@ app.get('/plant/:potId', requireAuth, requirePasswordChange, async (req, res) =>
         const sqlitePlant = db.getPlantByPotId(req.params.potId);
         if (!sqlitePlant) return res.redirect('/');
 
+        const images = db.getPlantImages(sqlitePlant.pot_id);
+
         // Build normalised plant object from SQLite columns
         let uses = [];
         try { uses = JSON.parse(sqlitePlant.uses || '[]'); } catch { uses = []; }
@@ -383,6 +388,7 @@ app.get('/plant/:potId', requireAuth, requirePasswordChange, async (req, res) =>
             plant.ph        = reading.ph        ?? 0;
             plant.light     = reading.light     ?? 0;
             plant.noData    = false;
+            plant.primaryImage = images.find(i => i.is_primary) || images[0] || null;
         }
 
         // Recalculate health with real values

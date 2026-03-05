@@ -177,7 +177,16 @@ function openModal(potId) {
   const plant = PLANTS.find(p => p.potId === potId);
   if (!plant) return;
 
-  document.getElementById('modal-emoji').textContent         = plant.emoji;
+ 
+  document.getElementById('modal-emoji').textContent = plant.primaryImage? '': plant.emoji;
+  if (plant.primaryImage) {
+    const img = document.createElement('img');
+    img.src = `/uploads/plants/${plant.potId}/${plant.primaryImage.filename}`;
+    img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:12px;';
+    const emojiEl = document.getElementById('modal-emoji');
+    emojiEl.innerHTML = '';
+    emojiEl.appendChild(img);
+  }
   document.getElementById('modal-plant-name').textContent    = plant.plantName;
   document.getElementById('modal-plant-species').textContent = plant.species;
   document.getElementById('modal-pot-id').textContent        = plant.potId;

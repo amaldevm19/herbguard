@@ -171,8 +171,9 @@ if (typeof CURRENT_POT !== 'undefined') {
 
 // ── Customer history table ────────────────
 function buildCpTable() {
+
   const tbody = document.getElementById('cp-history-tbody');
-  if (!tbody || !window.CP_HISTORY || !CP_HISTORY.length) return;
+  if (!tbody || !CP_HISTORY || !CP_HISTORY.length) return;
 
   const rows = CP_HISTORY.slice(0, 15);
   tbody.innerHTML = rows.map(row => {

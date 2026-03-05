@@ -16,12 +16,20 @@
       <em>{{plant.species}}</em>
       {{#if plant.family}}· {{plant.family}}{{/if}}
     </p>
-    {{#if plant.location}}
-    <div class="cp-location">
-      <i data-lucide="map-pin"></i>
-      {{plant.location}}
+    <div class="cp-meta-row">
+      {{#if plant.location}}
+      <div class="cp-location">
+        <i data-lucide="map-pin"></i>
+        {{plant.location}}
+      </div>
+      {{/if}}
+      {{#if sensor.hasData}}
+      <div class="cp-last-updated">
+        <i data-lucide="clock"></i>
+        {{timeAgo lastUpdated}}
+      </div>
+      {{/if}}
     </div>
-    {{/if}}
 
     <!-- Health indicator -->
     {{#if sensor.hasData}}
@@ -47,10 +55,7 @@
         <span class="cp-sensor-label">pH</span>
       </div>
     </div>
-    <div class="cp-last-updated">
-      <i data-lucide="clock"></i>
-      {{timeAgo lastUpdated}}
-    </div>
+
     {{else}}
     <div class="cp-no-sensor">
       <i data-lucide="wifi-off"></i>
@@ -181,4 +186,5 @@
     emoji:     '{{plant.emoji}}'
   };
   const CP_HISTORY = {{{historyJSON}}};
+  
 </script>
