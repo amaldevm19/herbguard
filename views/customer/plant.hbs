@@ -22,6 +22,41 @@
       {{plant.location}}
     </div>
     {{/if}}
+
+    <!-- Health indicator -->
+    {{#if sensor.hasData}}
+    <div class="cp-health-row">
+      <div class="cp-sensor-item">
+        <i data-lucide="droplets"></i>
+        <span>{{toFixed sensor.moisture 0}}%</span>
+        <span class="cp-sensor-label">Moisture</span>
+      </div>
+      <div class="cp-sensor-item">
+        <i data-lucide="thermometer"></i>
+        <span>{{toFixed sensor.airTemp 1}}°C</span>
+        <span class="cp-sensor-label">Temp</span>
+      </div>
+      <div class="cp-sensor-item">
+        <i data-lucide="wind"></i>
+        <span>{{toFixed sensor.humidity 0}}%</span>
+        <span class="cp-sensor-label">Humidity</span>
+      </div>
+      <div class="cp-sensor-item">
+        <i data-lucide="flask-conical"></i>
+        <span>{{toFixed sensor.ph 1}}</span>
+        <span class="cp-sensor-label">pH</span>
+      </div>
+    </div>
+    <div class="cp-last-updated">
+      <i data-lucide="clock"></i>
+      {{timeAgo lastUpdated}}
+    </div>
+    {{else}}
+    <div class="cp-no-sensor">
+      <i data-lucide="wifi-off"></i>
+      No sensor data available
+    </div>
+    {{/if}}
   </div>
 </div>
 
@@ -108,6 +143,31 @@
   </div>
 </div>
 
+{{#if sensor.hasData}}
+<div class="cp-section">
+  <h2 class="cp-section-title">
+    <i data-lucide="history"></i> Recent Readings
+  </h2>
+  <div class="cp-table-wrap">
+    <table class="cp-data-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Moisture</th>
+          <th>Air Temp</th>
+          <th>Humidity</th>
+          <th>pH</th>
+          <th>Light</th>
+        </tr>
+      </thead>
+      <tbody id="cp-history-tbody">
+        <!-- Populated by customer.js -->
+      </tbody>
+    </table>
+  </div>
+</div>
+{{/if}}
+
 <!-- Lightbox -->
 <div class="cp-lightbox" id="cp-lightbox" onclick="closeLightbox()">
   <img id="cp-lightbox-img" src="" alt=""/>
@@ -120,4 +180,5 @@
     plantName: '{{plant.plant_name}}',
     emoji:     '{{plant.emoji}}'
   };
+  const CP_HISTORY = {{{historyJSON}}};
 </script>

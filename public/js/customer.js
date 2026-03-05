@@ -168,3 +168,31 @@ if (typeof CURRENT_POT !== 'undefined') {
   saveVisited(CURRENT_POT.potId, CURRENT_POT.plantName, CURRENT_POT.emoji);
   renderVisitedBar(CURRENT_POT.potId);
 }
+
+// ── Customer history table ────────────────
+function buildCpTable() {
+  const tbody = document.getElementById('cp-history-tbody');
+  if (!tbody || !window.CP_HISTORY || !CP_HISTORY.length) return;
+
+  const rows = CP_HISTORY.slice(0, 15);
+  tbody.innerHTML = rows.map(row => {
+    const d = new Date(row._time);
+    const timeLabel = d.toLocaleString('en-US', {
+      month:  'short',
+      day:    '2-digit',
+      hour:   '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    return `<tr>
+      <td class="mono muted">${timeLabel}</td>
+      <td class="mono" style="color:#58a6ff">${row.moisture.toFixed(0)}%</td>
+      <td class="mono" style="color:#e3b341">${row.air_temp.toFixed(1)}°C</td>
+      <td class="mono" style="color:#39d353">${row.humidity.toFixed(0)}%</td>
+      <td class="mono" style="color:#bc8cff">${row.ph.toFixed(1)}</td>
+      <td class="mono muted">${Math.round(row.light).toLocaleString()} lux</td>
+    </tr>`;
+  }).join('');
+}
+
+buildCpTable();

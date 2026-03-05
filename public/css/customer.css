@@ -388,3 +388,92 @@ body.light-theme .cp-hero-emoji {
   color: var(--muted);
   line-height: 1.4;
 }
+
+/* ── Customer sensor row ─────────────────── */
+.cp-health-row {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cp-sensor-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  min-width: 60px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.cp-sensor-item svg {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+}
+
+.cp-sensor-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.cp-last-updated {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.cp-last-updated svg {
+  width: 12px;
+  height: 12px;
+}
+
+.cp-no-sensor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ── Customer history table ──────────────── */
+.cp-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.cp-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.cp-data-table th {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  color: var(--muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.75rem;
+}
+
+.cp-data-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+}
+
+.cp-data-table tr:last-child td {
+  border-bottom: none;
+}
