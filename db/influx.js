@@ -105,10 +105,35 @@ async function getAllLatestReadings() {
   return rows;
 }
 
+async function getLastChangeTime(potId) {
+  const query = `
+    from(bucket: "${bucket}")
+      |> range(start: -365d)
+      |> filter(fn: (r) => r._measurement == "sensor_reading")
+      |> filter(fn: (r) => r.pot_id == "${potId}")
+      |> last()
+      |> keep(columns: ["_time"])
+  `;
+
+  const rows = [];
+  await new Promise((resolve, reject) => {
+    queryApi.queryRows(query, {
+      next(row, tableMeta) {
+        rows.push(tableMeta.toObject(row));
+      },
+      error: reject,
+      complete: resolve
+    });
+  });
+
+  return rows[0]?._time || null;
+}
+
 
 module.exports = {
   writeSensorReading,
   getLatestReading,
   getSensorHistory,
-  getAllLatestReadings
+  getAllLatestReadings,
+  getLastChangeTime
 };

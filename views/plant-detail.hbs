@@ -31,7 +31,7 @@
         {{/if}}
         <span class="detail-tag">
           <i data-lucide="clock"></i>
-          {{plant.lastUpdated}}
+          <span class="last-updated-time">{{timeAgo plant.lastUpdated}}</span>
         </span>
       </div>
       <p class="detail-description">{{plant.description}}</p>

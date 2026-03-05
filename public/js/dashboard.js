@@ -103,12 +103,22 @@ function updateCard(plant) {
     }
   }
 
+  // Display last updated time in "time ago" format
+  function timeAgo(isoString) {
+    if (!isoString) return 'No data';
+    const diff = Math.floor((Date.now() - new Date(isoString)) / 1000);
+    if (diff < 60)   return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago ⚠️`;
+    return `${Math.floor(diff / 86400)}d ago 🚨`;
+  }
+
   // Last updated
   const updEl = card.querySelector('.card-footer-meta');
   if (updEl) {
     updEl.innerHTML = `
       <i data-lucide="clock"></i>
-      Updated ${plant.lastUpdated}
+     Last sensor response was: ${timeAgo(plant.lastUpdated)}
     `;
   }
 

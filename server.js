@@ -94,7 +94,16 @@ const hbsHelpers = {
     lightStatus(active)  { return active ? 'Active' : 'Standby'; },
     json(value)          { return JSON.stringify(value); },
     isAdmin(role) { return role === 'admin'; },
-    isStaff(role) { return role === 'staff'; },    
+    isStaff(role) { return role === 'staff'; }, 
+    
+    timeAgo(isoString) {
+      if (!isoString) return 'No data';
+      const diff = Math.floor((Date.now() - new Date(isoString)) / 1000);
+      if (diff < 60)    return `${diff}s ago`;
+      if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago ⚠️`;
+      return `${Math.floor(diff / 86400)}d ago 🚨`;
+    }
 
 };
 
@@ -222,7 +231,7 @@ app.get('/', requireAuth, requirePasswordChange, async (req, res) => {
         const readings = await influx.getAllLatestReadings();
 
         // Merge InfluxDB readings into plant metadata
-        const mergedPlants = sqlitePlants.map(plant => {
+        const mergedPlants = await Promise.all (sqlitePlants.map(async plant => {
 
             // Safe parse of uses JSON
             let uses = [];
@@ -277,6 +286,7 @@ app.get('/', requireAuth, requirePasswordChange, async (req, res) => {
                 merged.health      = status;
                 merged.healthScore = healthScore;
                 merged.issues      = issues;
+                merged.lastUpdated = await influx.getLastChangeTime(merged.potId);
             } else {
                 // No sensor data yet — show neutral state
                 merged.health      = 'good';
@@ -286,7 +296,7 @@ app.get('/', requireAuth, requirePasswordChange, async (req, res) => {
             }
 
             return merged;
-        });
+        }));
 
         const totalPots    = mergedPlants.length;
         const healthyCount = mergedPlants.filter(p => p.health === 'good').length;
@@ -380,7 +390,7 @@ app.get('/plant/:potId', requireAuth, requirePasswordChange, async (req, res) =>
         plant.health      = status;
         plant.healthScore = healthScore;
         plant.issues      = issues;
-
+        plant.lastUpdated = await influx.getLastChangeTime(req.params.potId);
         // Get raw history from InfluxDB — no remapping, keep original keys
         const history = await influx.getSensorHistory(req.params.potId, 48);
 
@@ -420,7 +430,7 @@ app.get('/api/plants', requireAuth, async (req, res) => {
     const sqlitePlants = db.getAllPlants();
     const readings     = await influx.getAllLatestReadings();
 
-    const merged = sqlitePlants.map(plant => {
+    const merged =  await Promise.all (sqlitePlants.map(async plant => {
       let uses = [];
       try { uses = JSON.parse(plant.uses || '[]'); } catch { uses = []; }
 
@@ -462,9 +472,9 @@ app.get('/api/plants', requireAuth, async (req, res) => {
       merged.health      = status;
       merged.healthScore = healthScore;
       merged.issues      = issues;
-
+      merged.lastUpdated = await influx.getLastChangeTime(merged.potId);
       return merged;
-    });
+    }));
 
     res.json(merged);
 
@@ -521,7 +531,7 @@ app.get('/api/plant/:potId/latest', requireAuth, async (req, res) => {
     plant.health      = status;
     plant.healthScore = healthScore;
     plant.issues      = issues;
-
+    plant.lastUpdated = await influx.getLastChangeTime(req.params.potId);
     res.json(plant);
 
   } catch (err) {

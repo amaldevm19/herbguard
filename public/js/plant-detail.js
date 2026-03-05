@@ -18,7 +18,7 @@ const tooltipStyle = {
   cornerRadius:    8
 };
 
-let lastHistoryTime = HISTORY.length > 0 ? HISTORY[0].time : null;
+let lastHistoryTime = HISTORY.length > 0 ? HISTORY[0]._time : null;
 
 // Show every 4th label to avoid crowding on x-axis
 const labels = HISTORY.map(r => r.timeLabel);
@@ -45,7 +45,7 @@ new Chart(
         },
         {
           label:           'Air Temp (°C)',
-          data:            HISTORY.map(r => r.airTemp),
+          data:            HISTORY.map(r => r.air_temp),
           borderColor:     '#e3b341',
           backgroundColor: 'transparent',
           fill:            false,
@@ -291,11 +291,47 @@ async function pollDetail() {
       }
     });
 
+    // ── Update health ring ────────────────
+    const C2       = 2 * Math.PI * 46;
+    const ringArc  = document.querySelector('.detail-health-ring circle:last-child');
+    const ringVal  = document.querySelector('.ring-val');
+    const healthTag = document.querySelector('.detail-tag.health-tag-good, .detail-tag.health-tag-warn, .detail-tag.health-tag-bad');
+
+    if (ringArc) {
+      const offset = C2 - (Math.min(fresh.healthScore / 100, 1)) * C2;
+      ringArc.style.strokeDashoffset = offset.toFixed(1);
+      ringArc.style.stroke = fresh.health === 'bad'  ? '#f85149'
+                           : fresh.health === 'warn' ? '#e3b341'
+                           : '#39d353';
+    }
+    if (ringVal) ringVal.textContent = fresh.healthScore;
+
+    if (healthTag) {
+      healthTag.className   = `detail-tag health-tag-${fresh.health}`;
+      healthTag.querySelector('span')?.remove();
+      healthTag.textContent = fresh.health === 'bad'  ? 'Critical'
+                            : fresh.health === 'warn' ? 'Attention'
+                            : 'Healthy';
+    }
+
+    // ── Update lastUpdated tag ────────────
+    const lastUpdatedTag = document.querySelector('.detail-tag .last-updated-time');
+    if (lastUpdatedTag) lastUpdatedTag.textContent = timeAgo(fresh.lastUpdated);
+
     window.HerbGuard.setConnected(true);
   } catch (err) {
     console.warn('[HerbGuard] Detail poll failed:', err.message);
     window.HerbGuard.setConnected(false);
   }
+}
+
+function timeAgo(isoString) {
+  if (!isoString) return 'Never recorded';
+  const diff = Math.floor((Date.now() - new Date(isoString)) / 1000);
+  if (diff < 60)    return `${diff}s ago`;
+  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago ⚠️`;
+  return `${Math.floor(diff / 86400)}d ago 🚨`;
 }
 
 async function pollHistory() {
@@ -306,9 +342,11 @@ async function pollHistory() {
     if (!data.length) return;
 
     // Only update if there are new entries
-    if (data[0].time !== lastHistoryTime) {
-      lastHistoryTime = data[0].time;
-      renderHistoryTable(data);
+    if (data[0]._time !== lastHistoryTime) {
+      lastHistoryTime = data[0]._time;
+      HISTORY.length = 0;
+      data.forEach(r => HISTORY.push(r));
+      buildTable();
       console.log('[HerbGuard] New history entry detected');
     }
   } catch (err) {

@@ -5,27 +5,6 @@
         <h1 class="page-title">Plant Overview</h1>
         <p class="page-sub">{{totalPots}} pots monitored · Data refreshes every 30s</p>
     </div>
-    <div class="header-pills">
-        {{#if alertCount}}
-            <div class="pill pill-red">
-            <i data-lucide="triangle-alert"></i>
-            <span>{{alertCount}} alert{{#if (isMoreThanOne alertCount)}}s{{/if}}</span>
-            </div>
-        {{else}}
-            <div class="pill pill-green">
-                <i data-lucide="check-circle"></i>
-                <span>All healthy</span>
-            </div>
-        {{/if}}
-        <div class="pill pill-blue">
-            <i data-lucide="droplets"></i>
-            <span>{{needsWater}} need water</span>
-        </div>
-        <div class="pill pill-amber">
-            <i data-lucide="thermometer"></i>
-            <span>{{avgTemp}}°C avg</span>
-        </div>
-    </div>
 </div>
 
 <!-- ── Summary Cards ──────────────────── -->
@@ -221,7 +200,7 @@
                 </div>
                 <div class="card-footer-meta">
                     <i data-lucide="clock"></i>
-                    Updated {{lastUpdated}}
+                    Last sensor response was: {{timeAgo lastUpdated}}
                 </div>
             </div>    
         </div>
