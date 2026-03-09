@@ -236,6 +236,52 @@
   </div>
 </div>
 
+<!-- ── Pump Settings ───────────────────── -->
+<div class="section-header-row" style="margin-top:2rem">
+  <h2 class="section-title">Pump Settings</h2>
+</div>
+
+<div class="control-card" style="flex-direction:column; align-items:flex-start; gap:1rem;">
+  
+  <!-- Two inputs side by side -->
+  <div style="display:flex; gap:2rem; flex-wrap:wrap; width:100%;">
+    <div class="oc-item" style="flex:1; min-width:160px;">
+      <div class="oc-label">
+        <i data-lucide="sliders-horizontal"></i> Error Correction
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.4rem;">
+        <input type="number" id="input-error-correction"
+          value="5" min="1" max="20" class="settings-input" />
+        <span class="oc-current">%</span>
+      </div>
+      <div class="oc-current" style="margin-top:0.3rem;">
+        Pump triggers when moisture &lt; (optimal_min − this)
+      </div>
+    </div>
+
+    <div class="oc-item" style="flex:1; min-width:160px;">
+      <div class="oc-label">
+        <i data-lucide="timer"></i> Max Pump Duration
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.4rem;">
+        <input type="number" id="input-pump-off-delay"
+          value="30" min="5" max="300" class="settings-input" />
+        <span class="oc-current">seconds</span>
+      </div>
+      <div class="oc-current" style="margin-top:0.3rem;">
+        Pump forces OFF after this duration
+      </div>
+    </div>
+  </div>
+
+  <!-- Button OUTSIDE the flex row — sits below both inputs -->
+  <button class="btn btn-sm btn-primary" onclick="savePumpSettings('{{plant.potId}}', this)">
+    <i data-lucide="save"></i> Save Settings
+  </button>
+  <div id="pump-settings-status" style="font-size:0.8rem; color:var(--muted);"></div>
+
+</div>
+
 <!-- ── Plant Info ──────────────────────── -->
 <div class="section-header-row" style="margin-top:2rem">
   <h2 class="section-title">Plant Information</h2>
@@ -341,4 +387,8 @@
 <script>
   const HISTORY = {{{historyJSON}}};
   const PLANT   = {{{plantJSON}}};
+
+  // After PLANT and HISTORY are defined — pre-fill settings inputs
+document.getElementById('input-error-correction').value = PLANT.error_correction ?? 5;
+document.getElementById('input-pump-off-delay').value   = PLANT.pump_off_delay   ?? 30;
 </script>

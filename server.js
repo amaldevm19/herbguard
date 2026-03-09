@@ -267,7 +267,7 @@ app.get('/', requireAuth, requirePasswordChange, async (req, res) => {
                 humidity:  0,
                 ph:        0,
                 light:     0,
-                lastPump:  null,
+                lastPump:  plant.last_pump || '—',
                 nextWater: null,
             };
 
@@ -373,7 +373,7 @@ app.get('/plant/:potId', requireAuth, requirePasswordChange, async (req, res) =>
             humidity:  0,
             ph:        0,
             light:     0,
-            lastPump:  null,
+            lastPump:  sqlitePlant.last_pump || '—',
             nextWater: null,
             noData:    true
         };
@@ -399,6 +399,8 @@ app.get('/plant/:potId', requireAuth, requirePasswordChange, async (req, res) =>
         plant.lastUpdated = await influx.getLastChangeTime(req.params.potId);
         // Get raw history from InfluxDB — no remapping, keep original keys
         const history = await influx.getSensorHistory(req.params.potId, 48);
+        plant.error_correction = sqlitePlant.error_correction ?? 5;
+        plant.pump_off_delay   = sqlitePlant.pump_off_delay   ?? 30;
 
         const gauges = [
             { key:'moisture', label:'Soil Moisture', value:plant.moisture, unit:'%',   max:100,  icon:'droplets',      optimal:plant.optimalMoisture },
@@ -458,7 +460,7 @@ app.get('/api/plants', requireAuth, async (req, res) => {
         humidity:  0,
         ph:        0,
         light:     0,
-        lastPump:  null,
+        lastPump:  plant.last_pump || '—',
         nextWater: null,
         noData:    true
       };
@@ -517,7 +519,7 @@ app.get('/api/plant/:potId/latest', requireAuth, async (req, res) => {
       humidity:  0,
       ph:        0,
       light:     0,
-      lastPump:  null,
+      lastPump:  sqlitePlant.last_pump || '—',
       nextWater: null,
       noData:    true
     };
@@ -555,6 +557,38 @@ app.get('/api/plant/:potId/history', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('InfluxDB error:', err);
     res.json([]);
+  }
+});
+
+// Get pump settings for a pot
+app.get('/api/pot/:potId/pump-settings', (req, res) => {
+  try {
+    const settings = db.getPumpSettings(req.params.potId);
+    if (!settings) return res.status(404).json({ error: 'Pot not found' });
+    res.json(settings);
+  } catch (err) {
+    console.error('Pump settings error:', err);
+    res.status(500).json({ error: 'Unable to fetch pump settings' });
+  }
+});
+
+app.post('/api/pot/:potId/pump-settings', requireAuth, (req, res) => {
+  try {
+    const { error_correction, pump_off_delay } = req.body;
+    db.updatePumpSettings(req.params.potId, error_correction, pump_off_delay);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Pump settings save error:', err);
+    res.status(500).json({ error: 'Failed to save' });
+  }
+});
+
+app.post('/api/pot/:potId/pump-event', (req, res) => {
+  try {
+    db.updateLastPump(req.params.potId);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update' });
   }
 });
 

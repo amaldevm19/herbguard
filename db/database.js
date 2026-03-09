@@ -58,6 +58,22 @@ db.exec(`
   );
 `);
 
+
+// ── Migrations ────────────────────────────
+const migrations = [
+  `ALTER TABLE plants ADD COLUMN error_correction REAL DEFAULT 5`,
+  `ALTER TABLE plants ADD COLUMN pump_off_delay INTEGER DEFAULT 30`,
+  `ALTER TABLE plants ADD COLUMN last_pump TEXT DEFAULT NULL`
+];
+
+migrations.forEach(sql => {
+  try {
+    db.exec(sql);
+  } catch(e) {
+    // Column already exists — ignore
+  }
+});
+
 // ── Seed default app config ───────────────
 const seedConfig = db.prepare(
   'INSERT OR IGNORE INTO app_config (key, value) VALUES (?, ?)'
@@ -274,6 +290,32 @@ function getImageById(id) {
   return db.prepare('SELECT * FROM plant_images WHERE id = ?').get(id);
 }
 
+function getPumpSettings(potId) {
+  return db.prepare(`
+    SELECT 
+      pot_id,
+      optimal_moisture_min,
+      optimal_moisture_max,
+      error_correction,
+      pump_off_delay
+    FROM plants WHERE pot_id = ?
+  `).get(potId);
+}
+
+function updatePumpSettings(potId, errorCorrection, pumpOffDelay) {
+  return db.prepare(`
+    UPDATE plants
+    SET error_correction = ?, pump_off_delay = ?
+    WHERE pot_id = ?
+  `).run(errorCorrection, pumpOffDelay, potId);
+}
+
+function updateLastPump(potId) {
+  return db.prepare(`
+    UPDATE plants SET last_pump = strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime') WHERE pot_id = ?
+  `).run(potId);
+}
+
 module.exports = {
   // Users
   isSetupComplete, getUserByUsername, getUserById,
@@ -285,5 +327,5 @@ module.exports = {
   // Images
   getPlantImages, addPlantImage, setPrimaryImage, deletePlantImage, getImageById,
   // Config
-  getConfig, setConfig, getAllConfig, 
+  getConfig, setConfig, getAllConfig, getPumpSettings,updatePumpSettings, updateLastPump
 };

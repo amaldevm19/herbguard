@@ -354,6 +354,50 @@ async function pollHistory() {
   }
 }
 
+async function savePumpSettings(potId, btn) {
+  const errorCorrection = parseFloat(document.getElementById('input-error-correction').value);
+  const pumpOffDelay    = parseInt(document.getElementById('input-pump-off-delay').value);
+  const statusEl        = document.getElementById('pump-settings-status');
+
+  if (isNaN(errorCorrection) || isNaN(pumpOffDelay)) {
+    statusEl.textContent = '⚠️ Invalid values';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  statusEl.textContent = '';
+
+  try {
+    const res = await fetch(`/api/pot/${potId}/pump-settings`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ error_correction: errorCorrection, pump_off_delay: pumpOffDelay })
+    });
+
+    if (!res.ok) throw new Error('Server error');
+
+    btn.textContent      = '✓ Saved';
+    btn.style.color      = 'var(--green)';
+    statusEl.textContent = `Saved — pump triggers below ${PLANT.optimalMoisture[0] - errorCorrection}% moisture`;
+    statusEl.style.color = 'var(--muted)';
+
+    setTimeout(() => {
+      btn.textContent  = 'Save Settings';
+      btn.style.color  = '';
+      btn.disabled     = false;
+    }, 2000);
+
+  } catch (err) {
+    statusEl.textContent = '❌ Failed to save';
+    statusEl.style.color = 'var(--red)';
+    btn.textContent      = 'Save Settings';
+    btn.disabled         = false;
+  }
+}
+
+
 
 
 // Start countdown — fires pollDetail every 30s

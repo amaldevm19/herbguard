@@ -16,13 +16,13 @@ module.exports = {
       args:    'http 3001',
       interpreter: 'none'   // not a node script
     },
-    {
-      name:        'simulator',
-      script:      'scripts/simulate-sensors.js',
-      interpreter: 'node',
-      env: {
-        NODE_ENV: 'development'
-      }
-    }
+    // {
+    //   name:        'simulator',
+    //   script:      'scripts/simulate-sensors.js',
+    //   interpreter: 'node',
+    //   env: {
+    //     NODE_ENV: 'development'
+    //   }
+    // }
   ]
 };

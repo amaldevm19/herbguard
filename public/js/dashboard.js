@@ -89,6 +89,10 @@ function updateCard(plant) {
     score.childNodes[0].textContent = plant.healthScore;
   }
 
+  // Last pump
+  const lastPumpEl = card.querySelector('.water-val');
+  if (lastPumpEl) lastPumpEl.textContent = plant.lastPump || '—';
+
   // Alert chips
   const alertsEl = card.querySelector('.card-alerts');
   if (alertsEl) {
